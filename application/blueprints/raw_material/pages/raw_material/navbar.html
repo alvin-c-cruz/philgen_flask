@@ -1,0 +1,22 @@
+{% 
+    if ("Raw Material" in current_user.user_roles)
+    or ("Raw Material Receiving Report" in current_user.user_roles) 
+    or ("Raw Material Adjustment" in current_user.user_roles) 
+    or ("Raw Material Request" in current_user.user_roles) 
+%}
+<li class="nav-item dropdown">
+  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    Raw Material
+  </a>
+  <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+    {% if "Raw Material" in current_user.user_roles %}    
+    <li><a class="dropdown-item" href="{{ url_for('raw_material.home') }}">Raw Material List</a></li>
+    <li><hr class="dropdown-divider"></li>
+    {% endif %}
+
+    {% if "Raw Material Request" in current_user.user_roles %}    
+    <li><a class="dropdown-item" href="{{ url_for('raw_material_request.home') }}">Raw Material Request</a></li>
+    {% endif %}
+  </ul>
+</li>
+{% endif %}

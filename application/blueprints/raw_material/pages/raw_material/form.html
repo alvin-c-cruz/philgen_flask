@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "macros_simple_form.html" import text_box, save_button %}
+
+{% block title %}Raw Material{% endblock %}
+
+{% block content %}
+<div class="container p-5">
+    {% if form.id %}
+    <h1 class="mb-4">Edit Raw Material</h1>
+    <form action="{{ url_for('raw_material.edit', record_id=form.id) }}" method="post">
+        <input type="number" name="raw_material_id" value="{{ form.id }}" hidden>
+        {% else %}
+    <h1 class="mb-4">Add Raw Material</h1>
+    <form action="{{ url_for('raw_material.add') }}" method="post">
+        {% endif %}
+    
+        {{ text_box(form, "Raw Material Name", "raw_material_name", form.raw_material_name, autofocus=True) }}
+        {{ text_box(form, "Raw Material Code", "raw_material_code", form.raw_material_code, autofocus=False) }}
+        {{  save_button() }}
+
+    </form>
+</div>
+{% endblock %}

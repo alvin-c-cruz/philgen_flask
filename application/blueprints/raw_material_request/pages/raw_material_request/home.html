@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Raw Material Request{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-danger">Raw Material Request</h1>
+    <a href="{{ url_for('raw_material_request.add') }}" class="btn btn-success mb-3">Add Raw Material Request</a>
+
+    <form method="post" action="{{ url_for('raw_material_request.home') }}" class="mb-3">
+        <div class="form row">
+            <div class="col-md-4">
+                <label for="date_from">Date From:</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from }}">
+            </div>
+            <div class="col-md-4">
+                <label for="date_to">Date To:</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary mt-4">Apply Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Request No.</th>
+                            <th>Notes</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            <td>{{ row.formatted_record_date }}</td>
+                            <td>{{ row.raw_material_request_number }}</td>
+                            <td>{{ row.notes }}</td>
+                            <td>
+                                {% if row.cancelled %}
+                                <p style="color: red;">Cancelled {{ row.formatted_cancelled }}</p>
+                                {% endif %}
+                                {% if row.submitted %}
+                                <p>For PO {{ row.formatted_submitted }}</p>
+                                {% endif %}
+                                {% if not (row.submitted or row.cancelled) %}
+                                <p style="color: green;">DRAFT</p>
+                                {% endif %}    
+                            </td>
+                            <td>
+                                {% if row.submitted or row.cancelled %}
+                                    <a href="{{ url_for('raw_material_request.view', record_id=row.id) }}"
+                                    class="btn btn-warning btn-sm">View</a>
+                                    {% if current_user.admin %}
+                                    <a href="{{ url_for('raw_material_request.unlock', record_id=row.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to unlock this record.')">Unlock</a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ url_for('raw_material_request.edit', record_id=row.id) }}"
+                                    class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="{{ url_for('raw_material_request.cancel', record_id=row.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to cancel this record.')">Cancel</a>
+                                    
+                                {% endif %}
+                                {% if current_user.admin %}
+                                <a href="{{ url_for('raw_material_request.delete', record_id=row.id) }}"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirmMessage('Type YES to Delete this record.')">Delete</a>
+                                {% endif %}
+                        </td>
+                        </tr>
+                        {% endfor %}
+                        {% if rows|length == 0 %}
+                        <tr>
+                            <td colspan="5" class="text-center">No records found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
