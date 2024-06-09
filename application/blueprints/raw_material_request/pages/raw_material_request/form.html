@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from "macros_form_header.html" import date_box, text_box, select_box %}
+{% from "macros_form_detail.html" import detail_primary_key, detail_number_float, detail_select_box, detail_textbox %}
 
 {% block title %}Raw Material Request{% endblock %}
 
@@ -135,49 +136,17 @@
                 {% for i, form_detail in form.details %}
                 <tr>
                     <td>
-                        {% if form_detail.id %}
-                        <input type="number" name="raw_material_request_detail_id-{{ i }}" value="{{ form_detail.id }}" hidden>
-                        {% endif %}
-                        <input type="number" name="quantity-{{ i }}" step="any" value="{{ form_detail.quantity }}" class="form-control currency" {% if form.submitted %}readonly{% endif %}>
-                        {% if form_detail.errors.get('quantity') %}
-                        <p class="text-danger">{{ form_detail.errors.get('quantity') }}</p>
-                        {% endif %}
+                        {{ detail_primary_key(i, form_detail, "raw_material_request_detail_id", form_detail.id) }}
+                        {{ detail_number_float(i, form, form_detail, "quantity", form_detail.quantity) }}
                     </td>
                     <td>
-                        <select name="measure_id-{{ i }}" class="form-select" {% if form.submitted %}disabled{% endif %}>
-                            <option value="0"></option>
-                            {% for measure in measure_dropdown %}
-                                {% if measure['id'] == form_detail.measure_id %}
-                                <option value="{{ measure['id'] }}" selected>{{ measure['dropdown_name'] }}</option>
-                                {% else %}
-                                <option value="{{ measure['id'] }}">{{ measure['dropdown_name'] }}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
-                        {% if form_detail.errors.get('measure_id') %}
-                        <p class="text-danger">{{ form_detail.errors.get('measure_id') }}</p>
-                        {% endif %}
+                        {{ detail_select_box(i, form, form_detail, "measure_id", form_detail.measure_id, measure_dropdown, autofocus=False) }}
                     </td>
                     <td>
-                        <select name="raw_material_id-{{ i }}" class="form-select" {% if form.submitted %}disabled{% endif %}>
-                            <option value="0"></option>
-                            {% for option in raw_material_dropdown %}
-                                {% if option['id'] == form_detail.raw_material_id %}
-                                <option value="{{ option['id'] }}" selected>{{ option['dropdown_name'] }}</option>
-                                {% else %}
-                                <option value="{{ option['id'] }}">{{ option['dropdown_name'] }}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
-                        {% if form_detail.errors.get('raw_material_id') %}
-                        <p class="text-danger">{{ form_detail.errors.get('raw_material_id') }}</p>
-                        {% endif %}
+                        {{ detail_select_box(i, form, form_detail, "raw_material_id", form_detail.raw_material_id, raw_material_dropdown, autofocus=False) }}
                     </td>
                     <td>
-                        <input type="text" name="side_note-{{ i }}" value="{{ form_detail.side_note }}" class="form-control" {% if form.submitted %}readonly{% endif %}>
-                        {% if form_detail.errors.get('side_note') %}
-                        <p class="text-danger">{{ form_detail.errors.get('side_note') }}</p>
-                        {% endif %}
+                        {{ detail_textbox(i, form, form_detail, "side_note", form_detail.side_note) }}
                     </td>
                 </tr>
                 {% endfor %}

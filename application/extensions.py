@@ -40,6 +40,20 @@ def month_last_day():
     return last_day
 
 
+def extract_numbers_from_right(s):
+    numbers = ''
+    non_numeric_encountered = False
+    for char in reversed(s):
+        if char.isdigit():
+            numbers = char + numbers
+        else:
+            non_numeric_encountered = True
+            break
+    if not numbers or non_numeric_encountered:
+        return s[:-len(numbers)] + str(int(numbers) + 1).zfill(len(numbers))
+    return numbers
+
+
 def next_control_number(obj, control_number_field, record_date=None):
     record = obj.query.order_by(getattr(obj, control_number_field).desc()).first()
     
@@ -60,12 +74,7 @@ def next_control_number(obj, control_number_field, record_date=None):
 
         return f"{prefix}{suffix}"
     else:
-        length = len(last_number)
-        suffix = int(last_number) + 1
-        string_format = '{:0' + str(length) + 'd}'
-        suffix = string_format.format(suffix)
-
-        return suffix
+        return extract_numbers_from_right(last_number)
 
 
 def short_date(str_date):
