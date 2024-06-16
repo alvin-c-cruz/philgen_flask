@@ -1,11 +1,11 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response, g
 import json
 from sqlalchemy.exc import IntegrityError
-from .models import Measure as Obj
-from .models import UserMeasure as Preparer
-from .models import AdminMeasure as Approver
+from .models import Vendor as Obj
+from .models import UserVendor as Preparer
+from .models import AdminVendor as Approver
 from .forms import Form
-from application.extensions import db, month_first_day, month_last_day
+from application.extensions import db, Url
 from application.blueprints.user import login_required, roles_accepted
 from flask_login import current_user
 
@@ -24,6 +24,7 @@ def home():
 
     context = {
         "rows": rows,
+        "url": Url(Obj)
     }
 
     return render_template(f"{app_name}/home.html", **context)
@@ -46,6 +47,7 @@ def add():
 
     context = {
         "form": form,
+        "url": Url(Obj)
     }
 
     return render_template(f"{app_name}/form.html", **context)
@@ -71,6 +73,7 @@ def edit(record_id):
 
     context = {
         "form": form,
+        "url": Url(Obj)
     }
 
     return render_template(f"{app_name}/form.html", **context)

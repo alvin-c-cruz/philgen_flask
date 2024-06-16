@@ -8,7 +8,10 @@
         <ul class="navbar-nav">
 
           {% if current_user.is_active %}
-            {% include "raw_material/navbar.html" %}
+          {% include "raw_material/navbar.html" %}
+          {% include "purchase_order/navbar.html" %}
+
+          {% include "vendor/navbar.html" %}
             
             <!-- Options -->
             <li class="nav-item dropdown">

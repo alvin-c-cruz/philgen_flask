@@ -1,16 +1,20 @@
 from dataclasses import dataclass
 from sqlalchemy import func
 from application.extensions import db
-from .models import Measure as Obj
-from .models import UserMeasure as Preparer
-from .models import AdminMeasure as Approver
+from .models import Vendor as Obj
+from .models import UserVendor as Preparer
+from .models import AdminVendor as Approver
 from . import app_name
 
 
 @dataclass
 class Form:
     id: int = None
-    measure_name: str = ""
+    vendor_name: str = ""
+    registered_name: str = ""
+    tin: str = ""
+    business_style: str = ""
+    address: str = ""
     
     user_prepare_id: int = None
     user_prepare: str = ""
@@ -72,20 +76,29 @@ class Form:
         self.id = request_form.get(f'{app_name}_id')
         for i in self._attributes():
             if i != "id":
+                print(i)
                 setattr(self, i, request_form.get(i).upper())
 
     def _validate_on_submit(self):
         self.errors = {}
 
-        if not self.measure_name:
-            self.errors["measure_name"] = "Please type measure name."
+        if not self.vendor_name:
+            self.errors["vendor_name"] = "Please type vendor alias."
         else:
-            existing_ = Obj.query.filter(
-                func.lower(Obj.measure_name) == func.lower(self.measure_name), 
-                Obj.id != self.id
-                ).first()
+            existing_ = Obj.query.filter(func.lower(Obj.vendor_name) == func.lower(self.vendor_name), Obj.id != self.id).first()
             if existing_:
-                self.errors["measure_name"] = "Measure name already exists."
+                self.errors["vendor_name"] = "Vendor alias already exists."
+
+        if not self.registered_name:
+            self.errors["registered_name"] = "Please type registered name."
+
+        if self.tin:
+            existing_ = Obj.query.filter(
+                func.lower(Obj.tin) == func.lower(self.tin), 
+                func.lower(Obj.vendor_name) != func.lower(self.vendor_name), 
+                Obj.id != self.id).first()
+            if existing_:
+                self.errors["tin"] = "TIN already used."
 
         if not self.errors:
             return True

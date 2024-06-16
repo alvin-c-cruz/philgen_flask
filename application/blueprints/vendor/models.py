@@ -14,20 +14,24 @@ class Vendor(db.Model):
     def __str__(self):
         return getattr(self, f"{app_name}_name")
     
+    def options(self):
+        _options = [{"id": record.id, "dropdown_name": getattr(record, f"{app_name}_name")} for record in self.query.order_by(f"{app_name}_name").all() if record.active]
+        return _options
+
     @property
     def preparer(self):
-        user_prepare = UserMeasure.query.filter(getattr(UserMeasure, f"{app_name}_id")==self.id).first()
+        user_prepare = UserVendor.query.filter(getattr(UserVendor, f"{app_name}_id")==self.id).first()
         return user_prepare
     
     @property
     def approved(self):
-        admin_approve = AdminMeasure.query.filter(getattr(AdminMeasure, f"{app_name}_id")==self.id).first()
+        admin_approve = AdminVendor.query.filter(getattr(AdminVendor, f"{app_name}_id")==self.id).first()
         return admin_approve
 
 
-class UserMeasure(db.Model):
-    measure_id = db.Column(db.Integer, db.ForeignKey(f'{app_name}.id'), primary_key=True)
-    measure = db.relationship(model_name, backref='user_prepare', lazy=True)
+class UserVendor(db.Model):
+    vendor_id = db.Column(db.Integer, db.ForeignKey(f'{app_name}.id'), primary_key=True)
+    vendor = db.relationship(model_name, backref='user_prepare', lazy=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     user = db.relationship('User', backref=f'{app_name}_prepared', lazy=True)
@@ -39,9 +43,9 @@ class UserMeasure(db.Model):
         return self.user.user_name
 
 
-class AdminMeasure(db.Model):
-    measure_id = db.Column(db.Integer, db.ForeignKey(f'{app_name}.id'), primary_key=True)
-    measure = db.relationship(model_name, backref='user_approved', lazy=True)
+class AdminVendor(db.Model):
+    vendor_id = db.Column(db.Integer, db.ForeignKey(f'{app_name}.id'), primary_key=True)
+    vendor = db.relationship(model_name, backref='user_approved', lazy=True)
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
     user = db.relationship('User', backref=f'{app_name}_approved', lazy=True)

@@ -37,6 +37,8 @@
                             <th>Issued</th>
                             <th>Adjustment</th>
                             <th>Ending</th>
+                            <th>Ordered</th>
+                            <th>Total</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -50,6 +52,8 @@
                             <td style="text-align: center;">{{ row.inventory.formatted_deduct }}</td>
                             <td style="text-align: center;">{{ row.inventory.formatted_adjustment }}</td>
                             <td style="text-align: center;">{{ row.inventory.formatted_ending }}</td>
+                            <td style="text-align: center;">{{ row.inventory.formatted_ordered }}</td>
+                            <td style="text-align: center;">{{ row.inventory.formatted_total }}</td>
                             <td>
                                 {% if not row.approved %}
                                 {{ edit_button(url_for('raw_material.edit', record_id=row.id)) }}

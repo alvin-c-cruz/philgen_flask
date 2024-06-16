@@ -1,0 +1,92 @@
+{% extends "base_print.html" %}
+
+{% block title %}Printing PO No. {{ purchase_order.purchase_order_number }}{% endblock %}
+
+{% block styles %}
+<style>
+    #cancelled {
+        position: absolute;
+        margin-top: 30%;
+        text-align: center;
+        width: 100%;
+        color: red;
+        font-size: 48px;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div>
+{% if object.cancelled %}
+<p id="cancelled">C A N C E L L E D</p>
+{% endif %}
+
+<h1>{{ current_app.config["COMPANY_NAME"] }}</h1>
+
+
+<div class="row">
+    <div class="col">
+        <label>Date</label>
+        <span>{{ object.formatted_record_date }}</span>
+    </div>
+    <div class="col">
+        <label>PO No.</label>
+        <span>{{ object.purchase_order_number }}</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <label>Vendor</label>
+        <span>{{ object.vendor.registered_name }}</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <label>Notes</label>
+        <span>{{ object.notes }}</span>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>PR No.</th>
+            <th>Grouping</th>
+            <th>Quantity</th>
+            <th>Measure</th>
+            <th>Description</th>
+            <th>Unit Price</th>
+            <th>Amount</th>
+            <th>Side Note</th>
+            <th>Delivery Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in object.purchase_order_details %}
+        <tr>
+            <td>{{ row.purchase_request_number }}</td>
+            <td>{{ row.grouping }}</td>
+            <td>{{ row.quantity }}</td>
+            <td>{{ row.measure.measure_name }}</td>
+            <td>{{ row.description }}</td>
+            <td>{{ row.unit_price }}</td>
+            <td>{{ row.total }}</td>
+            <td>{{ row.side_note }}</td>
+            <td>{{ row.formatted_delivery_date }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfooter>
+        <tr>
+            <td colspan="5">Total</td>
+            <td>{{ row.purchase_order.total_amount }}</td>
+            <td></td>
+        </tr>
+    </tfooter>
+</table>                
+
+<label>Prepared by:</label>
+<span>{{ object.preparer }}</span>
+</div>
+{% endblock %}
