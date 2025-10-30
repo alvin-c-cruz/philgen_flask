@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% from "macros_form_header.html" import date_box, text_box, select_box %}
+
+{% block title %}Plastic Raw Material Receipt{% endblock %}
+
+{% block styles %}
+<style>
+    .table th, .table td, .table input, .table select {
+        font-size: .85em; 
+    }
+
+    /* Add your style adjustments here */
+    .table th, .table td {
+        white-space: nowrap; /* Prevent line breaks in table cells */
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) {
+        width: 10%; /* Quantity */
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+        width: 10%; /* Measure */
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+        width: 25%; /* Description */
+    }
+
+    th:nth-child(4),
+    td:nth-child(4) {
+        width: 10%; /* Date Needed */
+    }
+
+    th:nth-child(5),
+    td:nth-child(5) {
+        width: 20%; /* Side Note */
+    }
+
+
+    input[type=number] {
+        text-align: right; 
+    }
+
+/* Hide the spinner controls */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container p-5">
+    {% if form.id %}
+        {% if form.submitted or form.cancelled %}
+        <h1 class="mb-4"><span style="color:red;">Locked</span> Plastic Raw Material Receiving Report</h1>
+        {% else %}   
+        <h1 class="mb-4">Edit Plastic Raw Material Receiving Report</h1>
+        {% endif %}
+        <form action="{{ url_for('plastic_raw_material_receipt.edit', record_id=form.id) }}" method="post">
+            <input type="number" name="plastic_raw_material_receipt_id" value="{{ form.id }}" hidden>
+    {% else %}
+        <h1 class="mb-4">New Plastic Raw Material Receiving Report</h1>
+        <form action="{{ url_for('plastic_raw_material_receipt.add') }}" method="post">
+    {% endif %}
+    <hr>
+    <div class="row mb-2">
+        <div class="col-6">
+            {% if form.errors.get('entry') %}
+            <p class="text-danger">{{ form.errors.get('entry') }}</p>
+            {% endif %}    
+            {% if form.cancelled %}
+            <h1 style="color:red;">CANCELLED</h1>
+            {% endif %}    
+        </div>
+        <div class="col-6">
+            <div class="row">
+                <div class="col-4">
+                    {% if not form.submitted  %}
+                        {% if not form.cancelled %}
+                    <input type="submit" value="Save Draft" name="cmd_button" class="btn btn-success form-control">
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col-4">
+                    {% if form.id %}
+                        {% if form.submitted or form.cancelled %}
+                    <a href="{{ url_for('plastic_raw_material_receipt.print', record_id=form.id) }}" 
+                        class="btn btn-secondary form-control" 
+                        target="_blank">Print</a>
+                        {% else %}
+                    <input type="submit" value="Submit for Printing" name="cmd_button" 
+                        class="btn btn-primary form-control" 
+                        onclick="return confirmMessage('Type YES to submit this record for printing.');">
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col-4">
+                    {% if not form.cancelled and form.id %}
+                    <a href="{{ url_for('plastic_raw_material_receipt.cancel', record_id=form.id) }}" 
+                        class="btn btn-danger form-control" 
+                        onclick="return confirmMessage('Type YES to cancel this record.');">Cancel Order</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    
+    <div class="row mb-2">
+        {{ date_box(form, "Date", "record_date", form.record_date, autofocus=True) }}
+        {{ text_box(form, "Plastic Raw Material Receiving Report No.", "plastic_raw_material_receipt_number", form.plastic_raw_material_receipt_number, autofocus=False) }}
+    </div>
+
+    <div class="row mb-2">
+        {{ select_box(form, "Vendor", "vendor_id", form.vendor_id, vendor_dropdown, autofocus=False) }}
+        {{ text_box(form, "Packing List", "packing_list", form.packing_list, autofocus=False) }}
+    </div>
+
+    <div class="row mb-2">
+        {{ text_box(form, "Notes", "notes", form.notes, autofocus=False) }}
+    </div>
+
+    <table class="table table-striped table-light">
+            <thead>
+                <tr>
+                    <th>Quantity</th>
+                    <th>Measure</th>
+                    <th>Description</th>
+                    <th>Side Note</th>
+                </tr>
+            </thead>
+            <tbody>                
+                {% for i, form_detail in form.details %}
+                <tr>
+                    <td>
+                        {% if form_detail.id %}
+                        <input type="number" name="plastic_raw_material_detail_id-{{ i }}" value="{{ form_detail.id }}" hidden>
+                        {% endif %}
+                        <input type="number" name="quantity-{{ i }}" step="any" value="{{ form_detail.quantity }}" class="form-control currency" {% if form.locked_ %}readonly{% endif %}>
+                        {% if form_detail.errors.get('quantity') %}
+                        <p class="text-danger">{{ form_detail.errors.get('quantity') }}</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <select name="measure_id-{{ i }}" class="form-select" {% if form.locked_ %}disabled{% endif %}>
+                            <option value="0"></option>
+                            {% for measure in measure_dropdown %}
+                                {% if measure['id'] == form_detail.measure_id %}
+                                <option value="{{ measure['id'] }}" selected>{{ measure['measure_name'] }}</option>
+                                {% else %}
+                                <option value="{{ measure['id'] }}">{{ measure['measure_name'] }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        {% if form_detail.errors.get('measure_id') %}
+                        <p class="text-danger">{{ form_detail.errors.get('measure_id') }}</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <select name="plastic_raw_material_id-{{ i }}" class="form-select" {% if form.locked_ %}disabled{% endif %}>
+                            <option value="0"></option>
+                            {% for option in plastic_raw_material_dropdown %}
+                                {% if option['id'] == form_detail.plastic_raw_material_id %}
+                                <option value="{{ option['id'] }}" selected>{{ option['plastic_raw_material_name'] }}</option>
+                                {% else %}
+                                <option value="{{ option['id'] }}">{{ option['plastic_raw_material_name'] }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                        {% if form_detail.errors.get('plastic_raw_material_id') %}
+                        <p class="text-danger">{{ form_detail.errors.get('plastic_raw_material_id') }}</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <input type="text" name="side_note-{{ i }}" value="{{ form_detail.side_note }}" class="form-control" {% if form.locked_ %}readonly{% endif %}>
+                        {% if form_detail.errors.get('side_note') %}
+                        <p class="text-danger">{{ form_detail.errors.get('side_note') }}</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <datalist id="so_numbers">
+            <option></option>
+            {% for so_number in so_numbers %}
+            <option value="{{ so_number }}"></option>
+            {% endfor %}
+        </datalist>    
+    </form>
+
+
+    {% for i, form_detail in form.details %}
+    <script>
+        $(function () {
+            $.ajax({
+                url: '{{ url_for("product.autocomplete") }}'
+            }).done(function (data) {
+                $('#product_id-{{ i }}').autocomplete({
+                    source: data,
+                    minLength: 0
+                });
+            });
+        });
+    </script>
+    {% endfor %}
+
+    <script>
+        // Get the input element
+        var inputElement = document.getElementByClassName('currency');
+
+        // When the input loses focus
+        inputElement.addEventListener('blur', function(event) {
+            var value = parseFloat(event.target.value.replace(/,/g, '')); // Remove commas, if any
+            event.target.value = value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        });
+
+        // When the input gains focus
+        inputElement.addEventListener('focus', function(event) {
+            var value = parseFloat(event.target.value.replace(/,/g, '')); // Remove commas, if any
+            event.target.value = value.toFixed(2);
+        });
+
+    </script>
+
+</div>
+{% endblock %}

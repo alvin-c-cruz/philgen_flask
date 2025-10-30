@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Plastic Label Return{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-danger">Plastic Label Return</h1>
+    <a href="{{ url_for('plastic_label_return.add') }}" class="btn btn-success mb-3">Add Plastic Label Return</a>
+
+    <form method="post" action="{{ url_for('plastic_label_return.home') }}" class="mb-3">
+        <div class="form row">
+            <div class="col-md-4">
+                <label for="date_from">Date From:</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from }}">
+            </div>
+            <div class="col-md-4">
+                <label for="date_to">Date To:</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary mt-4">Apply Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Return No.</th>
+                            <th>Notes</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plastic_label_return in plastic_label_returns %}
+                        <tr>
+                            <td>{{ plastic_label_return.formatted_record_date }}</td>
+                            <td>{{ plastic_label_return.plastic_label_return_number }}</td>
+                            <td>{{ plastic_label_return.notes }}</td>
+                            <td>
+                                {% if plastic_label_return.cancelled %}
+                                <p style="color: red;">Cancelled {{ plastic_label_return.formatted_cancelled }}</p>
+                                {% endif %}
+                                {% if plastic_label_return.submitted %}
+                                <p>For acceptance {{ plastic_label_return.formatted_submitted }}</p>
+                                {% endif %}
+                                {% if not (plastic_label_return.submitted or plastic_label_return.cancelled) %}
+                                <p style="color: green;">DRAFT</p>
+                                {% endif %}    
+                            </td>
+                            <td>
+                                {% if plastic_label_return.submitted or plastic_label_return.cancelled %}
+                                    <a href="{{ url_for('plastic_label_return.view', record_id=plastic_label_return.id) }}"
+                                    class="btn btn-warning btn-sm">View</a>
+                                    {% if current_user.admin %}
+                                    <a href="{{ url_for('plastic_label_return.unlock', record_id=plastic_label_return.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to unlock this record.')">Unlock</a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ url_for('plastic_label_return.edit', record_id=plastic_label_return.id) }}"
+                                    class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="{{ url_for('plastic_label_return.cancel', record_id=plastic_label_return.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to cancel this record.')">Cancel</a>
+                                    
+                                {% endif %}
+                                {% if current_user.admin %}
+                                    <a href="{{ url_for('plastic_label_return.delete', record_id=plastic_label_return.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to unlock this record.')">Delete</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if plastic_label_returns|length == 0 %}
+                        <tr>
+                            <td colspan="5" class="text-center">No records found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

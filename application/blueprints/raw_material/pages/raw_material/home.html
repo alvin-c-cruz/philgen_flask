@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Raw Material{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Raw Material</h1>
+    <a href="{{ url_for('raw_material.add') }}" class="btn btn-success mb-3">Add Raw Material</a>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Raw Material Name</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            <td>{{ row.raw_material_name }}</td>
+                            <td>
+                                <a href="{{ url_for('raw_material.edit', raw_material_id=row.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="{{ url_for('raw_material.delete', raw_material_id=row.id) }}" class="btn btn-danger btn-sm" onclick="return confirmDelete();">Delete</a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="2">No record found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

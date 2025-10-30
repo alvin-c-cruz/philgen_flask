@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+
+{% block title %}Job Order{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-danger">Job Order</h1>
+    <a href="{{ url_for('sales_order.add') }}" class="btn btn-success mb-3">Add Job Order</a>
+    <a href="{{ url_for('sales_order.schedule') }}" class="btn btn-success mb-3">View Delivery Schedule</a>
+
+    <form method="post" action="{{ url_for('sales_order.home') }}" class="mb-3">
+        <div class="form row">
+            <div class="col-md-4">
+                <label for="date_from">Date From:</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from }}">
+            </div>
+            <div class="col-md-4">
+                <label for="date_to">Date To:</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary mt-4">Apply Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>JO No.</th>
+                            <th>Customer</th>
+                            <th>Notes</th>
+                            <th>Particulars</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sales_order in sales_orders %}
+                        <tr>
+                            <td>{{ sales_order.formatted_record_date }}</td>
+                            <td>{{ sales_order.sales_order_number }}</td>
+                            <td>{{ sales_order.sales_order_customer.customer_name }}</td>
+                            <td>{{ sales_order.notes }}</td>
+                            <td>
+                                {% if not sales_order.cancelled and sales_order.submitted %}
+                                    {% if sales_order.for_delivery() %}
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>Code</th>
+                                            <th>Order</th>
+                                            <th>Delivered</th>
+                                            <th>Balance</th>
+                                        </tr>
+                                        {% for order in sales_order.for_delivery() %}
+                                        <tr>
+                                            <td>{{ order[0] }}</td>
+                                            <td style="text-align: right;">{{ order[1] }}</td>
+                                            <td style="text-align: right;">{{ order[2] }}</td>
+                                            <td style="text-align: right;">{{ order[3] }}</td>
+                                        </tr>
+                                        {% endfor %}    
+                                    </table>
+                                    {% else %}
+                                    Completed
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if sales_order.cancelled %}
+                                <p style="color: red;">Cancelled {{ sales_order.formatted_cancelled }}</p>
+                                {% endif %}
+                                {% if sales_order.submitted %}
+                                <p>For Order Filling {{ sales_order.formatted_submitted }}</p>
+                                {% endif %}
+                                {% if not (sales_order.submitted or sales_order.cancelled) %}
+                                <p style="color: green;">DRAFT</p>
+                                {% endif %}    
+                            </td>
+                            <td>
+                                {% if sales_order.submitted or sales_order.cancelled %}
+                                    <a href="{{ url_for('sales_order.view', sales_order_id=sales_order.id) }}"
+                                    class="btn btn-warning btn-sm">View</a>
+                                    {% if current_user.admin %}
+                                    <a href="{{ url_for('sales_order.unlock', sales_order_id=sales_order.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to unlock this record.')">Unlock</a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ url_for('sales_order.edit', sales_order_id=sales_order.id) }}"
+                                    class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="{{ url_for('sales_order.cancel', sales_order_id=sales_order.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to cancel this record.')">Cancel</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if sales_orders|length == 0 %}
+                        <tr>
+                            <td colspan="5" class="text-center">No records found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

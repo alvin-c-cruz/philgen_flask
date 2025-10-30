@@ -1,0 +1,69 @@
+{% extends "base_print.html" %}
+
+{% block title %}Printing Return No. {{ plastic_raw_material_return.plastic_raw_material_return_number }}{% endblock %}
+
+{% block styles %}
+<style>
+    #cancelled {
+        position: absolute;
+        margin-top: 30%;
+        text-align: center;
+        width: 100%;
+        color: red;
+        font-size: 48px;
+        opacity: 0.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div>
+{% if plastic_raw_material_return.cancelled %}
+<p id="cancelled">C A N C E L L E D</p>
+{% endif %}
+
+<h1>{{ current_app.config["COMPANY_NAME"] }}</h1>
+
+
+<div class="row">
+    <div class="col">
+        <label>Date</label>
+        <span>{{ plastic_raw_material_return.formatted_record_date }}</span>
+    </div>
+    <div class="col">
+        <label>DR No.</label>
+        <span>{{ plastic_raw_material_return.plastic_raw_material_return_number }}</span>
+    </div>
+</div>
+<div class="row">
+    <div class="col">
+        <label>Notes</label>
+        <span>{{ plastic_raw_material_return.notes }}</span>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Quantity</th>
+            <th>Measure</th>
+            <th>Description</th>
+            <th>Side Note</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for row in plastic_raw_material_return.plastic_raw_material_return_details %}
+        <tr>
+            <td>{{ row.quantity }}</td>
+            <td>{{ row.measure.measure_name }}</td>
+            <td>{{ row.plastic_raw_material.plastic_raw_material_name }}</td>
+            <td>{{ row.side_note }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>                
+
+<label>Prepared by:</label>
+<span>{{ plastic_raw_material_return.preparer }}</span>
+</div>
+{% endblock %}

@@ -1,0 +1,207 @@
+{% extends "base_print.html" %}
+
+{% block title %}Printing PR No. {{ purchase_request.purchase_request_number }}{% endblock %}
+
+{% block styles %}
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        font-size: 0.8em;
+    }
+
+    td {
+        font-size: 0.7em;
+        height: 30px; /* Adjust as needed */
+        border: 1px solid #ccc; /* Optional: For better visibility */
+    }
+</style>
+
+<style>
+    .line-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .line {
+        width: 100%;
+        border-top: 1px solid black;
+        margin: 0;
+    }
+    
+    .text {
+        margin: 0;
+        padding: 0;
+        line-height: 1; /* Reduces the spacing */
+    }
+    
+</style>
+
+<style>
+    #cancelled {
+        position: absolute;
+        margin-top: 30%;
+        text-align: center;
+        width: 100%;
+        color: red;
+        font-size: 48px;
+        opacity: 0.5;
+    }
+
+    .signatory {
+        margin-top: 25px;
+    }
+
+    .signatory_name, .information{
+        border-bottom: 1px solid black; 
+    }
+
+    .signatory_name{
+        text-align: center;
+        font-size: 0.8em;
+    }
+
+    .information{
+        text-align: left;
+    }
+
+    .centered {
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div>
+{% if purchase_request.cancelled %}
+<p id="cancelled">C A N C E L L E D</p>
+{% endif %}
+
+{% if g.company_name %}
+<h1 class="centered">{{ g.company_name }}</h1>
+{% else %}
+<h1 class="centered">Company Name</h1>
+{% endif %}
+<h2 class="centered">PURCHASE REQUEST</h2>
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <label class="col-3">Date</label>
+            <span class="col-4 signatory_name">{{ purchase_request.formatted_record_date }}</span>
+        </div>
+    </div>
+    <div class="col" style="text-align: right;">
+        <span>
+            <label>PR No.</label>
+            <span style="color:red;"><strong>{{ purchase_request.purchase_request_number }}</strong></span>
+        </span>
+        
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <label class="col-3">Department</label>
+            <span class="col-9 information">{{ purchase_request.department.department_name }}</span>
+        </div>
+    </div>
+    <div class="col">
+        <div class="row">
+            <label class="col-3">Notes</label>
+            <span class="col-9 information">{{ purchase_request.request_note }}</span>
+        </div>
+    </div>
+</div>
+
+
+
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="centered">Quantity</th>
+            <th class="centered">Measure</th>
+            <th class="centered">Description</th>
+            <th class="centered">Date Needed</th>
+            <th class="centered">Remarks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in range(10) %}
+        <tr>
+            {% if purchase_request.purchase_request_details[i] is defined %}
+                <td class="centered">{{ purchase_request.purchase_request_details[i].formatted_quantity }}</td>
+                <td class="centered">{{ purchase_request.purchase_request_details[i].measure.measure_name }}</td>
+                <td>{{ purchase_request.purchase_request_details[i].raw_material.raw_material_name }}</td>
+                <td class="centered">
+                    {% if purchase_request.purchase_request_details[i].formatted_date_needed %}
+                    {{ purchase_request.purchase_request_details[i].formatted_date_needed }}
+                    {% endif %}
+                </td>
+                <td>{{ purchase_request.purchase_request_details[i].side_note }}</td>
+            {% else %}
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>    
+
+<div class="row">
+    <div class="col-6 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="prepared_by">Prepared by:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="prepared_by">{{ purchase_request.prepared_by }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="prepared_by">Checked by:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="checked_by">{{ purchase_request.checked_by }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-6 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="requested_by">Requested by:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="requested_by">{{ purchase_request.requested_by }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="approved_by">Approved by:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="approved_by">{{ purchase_request.approved_by }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}

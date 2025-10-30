@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Plastic Raw Material Adjustment{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-danger">Plastic raw Material Adjustment</h1>
+    <a href="{{ url_for('plastic_raw_material_adjustment.add') }}" class="btn btn-success mb-3">Add Plastic Raw Material Adjustment</a>
+
+    <form method="post" action="{{ url_for('plastic_raw_material_adjustment.home') }}" class="mb-3">
+        <div class="form row">
+            <div class="col-md-4">
+                <label for="date_from">Date From:</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from }}">
+            </div>
+            <div class="col-md-4">
+                <label for="date_to">Date To:</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary mt-4">Apply Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Adj No.</th>
+                            <th>Notes</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for record in records %}
+                        <tr>
+                            <td>{{ record.formatted_record_date }}</td>
+                            <td>{{ record.plastic_raw_material_adjustment_number }}</td>
+                            <td>{{ record.notes }}</td>
+                            <td>
+                                {% if record.cancelled %}
+                                <p style="color: red;">Cancelled {{ record.formatted_cancelled }}</p>
+                                {% endif %}
+                                {% if record.submitted %}
+                                <p>For approval {{ record.formatted_submitted }}</p>
+                                {% endif %}
+                                {% if not (record.submitted or record.cancelled) %}
+                                <p style="color: green;">DRAFT</p>
+                                {% endif %}    
+                            </td>
+                            <td>
+                                {% if record.submitted or record.cancelled %}
+                                    <a href="{{ url_for('plastic_raw_material_adjustment.view', record_id=plastic_raw_material_adjustment.id) }}"
+                                    class="btn btn-warning btn-sm">View</a>
+                                    {% if current_user.admin %}
+                                    <a href="{{ url_for('plastic_raw_material_adjustment.unlock', record_id=plastic_raw_material_adjustment.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to unlock this record.')">Unlock</a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ url_for('plastic_raw_material_adjustment.edit', record_id=plastic_raw_material_adjustment.id) }}"
+                                    class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="{{ url_for('plastic_raw_material_adjustment.cancel', record_id=plastic_raw_material_adjustment.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to cancel this record.')">Cancel</a>
+                                    
+                                {% endif %}
+                                {% if current_user.admin %}
+                                <a href="{{ url_for('plastic_raw_material_adjustment.delete', record_id=plastic_raw_material_adjustment.id) }}"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirmMessage('Type YES to Delete this record.')">Delete</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if records|length == 0 %}
+                        <tr>
+                            <td colspan="6" class="text-center">No records found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

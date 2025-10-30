@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% from "macros_simple_form.html" import text_box, save_button %}
+
+{% block title %}Lithography{% endblock %}
+
+{% block content %}
+<div class="container p-5">
+    {% if form.id %}
+    <h1 class="mb-4">Edit Lithography</h1>
+    <form action="{{ url_for('lithography.edit', record_id=form.id) }}" method="post">
+        <input type="number" name="lithography_id" value="{{ form.id }}" hidden>
+        {% else %}
+    <h1 class="mb-4">Add Lithography</h1>
+    <form action="{{ url_for('lithography.add') }}" method="post">
+        {% endif %}
+    
+        {{ text_box(form, "Lithography", "lithography_name", form.lithography_name, autofocus=True) }}
+        {{  save_button() }}
+
+    </form>
+</div>
+{% endblock %}

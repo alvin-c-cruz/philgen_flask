@@ -1,0 +1,109 @@
+{% extends "base_print.html" %}
+
+{% block title %}Printing DR No. {{ obj.delivery_receipt_number }}{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        font-family: Calibri, Arial, sans-serif;
+        font-size: 14px; 
+        {% if not (obj.submitted or obj.cancelled) %}
+        color: red;
+        {% endif %}
+    }
+
+    {% for obj_name, obj_position in header_positions %}
+    .{{ obj_name }} {
+        position: absolute;
+        {% if obj_position.font_size %}font-size: {{ obj_position.font_size }}px;{% endif %}
+        {% if obj_position.left %}left: {{ obj_position.left }}mm;{% endif %}
+        {% if obj_position.top %}top: {{ obj_position.top }}mm;{% endif %}
+        {% if obj_position.width %}width: {{ obj_position.width }}mm;{% endif %}
+        {% if obj_position.margin_left %}margin-left: {{ obj_position.margin_left }}mm;{% endif %}
+    }
+    {% endfor %}
+
+    {% for obj_name, obj_position in article_positions %}
+    .{{ obj_name }} {
+        display: inline-block;
+        {% if obj_position.font_size %}font-size: {{ obj_position.font_size }}px;{% endif %}
+        {% if obj_position.left %}left: {{ obj_position.left }}mm;{% endif %}
+        {% if obj_position.top %}top: {{ obj_position.top }}mm;{% endif %}
+        {% if obj_position.width %}width: {{ obj_position.width }}mm;{% endif %}
+        {% if obj_position.margin_left %}margin-left: {{ obj_position.margin_left }}mm;{% endif %}
+    }
+    {% endfor %}
+
+    pre {
+        margin: 0; 
+        overflow: hidden; /* Hides the scroll bars */
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<strong class="delivery_receipt_number">
+    {{ obj.delivery_receipt_extra_number }}
+</strong>
+
+<strong class="customer_name">
+    {{ obj.customer.registered_name }}
+</strong>
+
+<strong class="delivery_address">
+    {{ obj.customer.address }}
+</strong>
+
+<strong class="formatted_record_date_dr">
+    {{ obj.formatted_record_date_dr }}
+</strong>
+
+<strong class="so_number">
+    {{ so_number }}
+</strong>
+
+<strong class="po_number">
+    {{ obj.po_number }}
+</strong>
+
+{% if obj.truck_number %}
+<strong class="truck_number">
+    Truck # {{ obj.truck_number }}
+</strong>
+{% endif %}
+
+<strong class="terms">
+    {{ obj.terms }}
+</strong>
+
+<strong class="salesman">
+    {{ obj.salesman }}
+</strong>
+
+<div class="articles" style="margin-top: 2mm;">
+    {% for row in rows %}
+    <div>
+        <strong class="product_name">{{ row.product.product_name }}</strong>
+        <strong class="formatted_quantity" style="text-align: right;">{{ row.formatted_quantity }} {{ row.measure.measure_name }}</strong>
+    </div>  
+    {% endfor %}
+    <div style="margin-top: 5mm;">
+        <strong class="notes"><pre>{{ obj.notes }}</pre></strong>
+    </div>
+</div>
+
+<strong class="prepared_by">
+    {{ obj.prepared_by }}
+</strong>
+
+<strong class="checked_by">
+    {{ obj.checked_by }}
+</strong>
+
+<strong class="approved_by">
+    {{ obj.approved_by }}
+</strong>
+
+{% endblock %}

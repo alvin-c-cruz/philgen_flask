@@ -1,0 +1,434 @@
+{% extends "base.html" %}
+{% from "macros_form_header.html" import date_box, text_box, select_box, text_area, search_box %}
+
+{% block title %}Purchase Order Extra{% endblock %}
+
+{% block styles %}
+<style>
+    .table th, .table td, .table input, .table select {
+        font-size: .85em; 
+    }
+
+    /* Add your style adjustments here */
+    .table th, .table td {
+        white-space: nowrap; /* Prevent line breaks in table cells */
+    }
+
+    th:nth-child(1),
+    td:nth-child(1) {
+        width: 10%; /* PR Number */
+    }
+
+    th:nth-child(2),
+    td:nth-child(2) {
+        width: 10%; /* Quantity */
+    }
+
+    th:nth-child(3),
+    td:nth-child(3) {
+        width: 10%; /* Measure */
+    }
+
+    th:nth-child(4),
+    td:nth-child(4) {
+        width: 25%; /* Description */
+    }
+
+    th:nth-child(5),
+    td:nth-child(5) {
+        width: 10%; /* Unit Price */
+    }
+
+    th:nth-child(6),
+    td:nth-child(6) {
+        width: 10%; /* Amount */
+    }
+
+
+    .right_align {
+        text-align: right; 
+    }
+
+    input[type=number] {
+        text-align: right; 
+    }
+
+/* Hide the spinner controls */
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container p-5">
+    {% if form.id %}
+        {% if form.submitted or form.cancelled %}
+        <h1 class="mb-4"><span style="color:red;">Locked</span> Purchase Order Extra</h1>
+        {% else %}   
+        <h1 class="mb-4">Edit Purchase Order Extra</h1>
+        {% endif %}
+        <form action="{{ url_for('purchase_order_extra.edit', record_id=form.id) }}" method="post">
+            <input type="number" name="record_id" value="{{ form.id }}" hidden>
+    {% else %}
+        <h1 class="mb-4">New Purchase Order Extra</h1>
+        <form action="{{ url_for('purchase_order_extra.add') }}" method="post">
+    {% endif %}
+    <hr>
+    <div class="row mb-2">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-4">
+                    {% if form.errors.get('entry') %}
+                    <p class="text-danger">{{ form.errors.get('entry') }}</p>
+                    {% endif %}    
+                    {% if form.cancelled %}
+                    <h1 style="color:red;">CANCELLED</h1>
+                    {% endif %}
+                </div>
+                <div class="col-4"></div>
+                <div class="col-4">
+                {% if form.id %}
+                    {% if not form.submitted  %}
+                        {% if not form.cancelled %}
+                    <a href="{{ url_for('purchase_order_extra.print', record_id=form.id) }}" 
+                        class="btn btn-secondary form-control" 
+                        target="_blank">Print Preview</a>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+                </div>
+            </div>
+                
+        </div>
+        <div class="col-6">
+            <div class="row">
+                <div class="col-4">
+                    {% if not form.submitted  %}
+                        {% if not form.cancelled %}
+                    <input type="submit" value="Save Draft" name="cmd_button" class="btn btn-success form-control">
+                        {% endif %}
+                    {% endif %}
+                    {% if form.id %}
+                        {% if form.submitted or form.cancelled %}
+                    <a href="{{ url_for('purchase_order_extra.unlock', record_id=form.id) }}" 
+                        class="btn btn-primary form-control" 
+                        onclick="return confirmMessage('Type YES to unlock this record.');">Unlock</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col-4">
+                    {% if form.id %}
+                        {% if form.submitted or form.cancelled %}
+                    <a href="{{ url_for('purchase_order_extra.print', record_id=form.id) }}" 
+                        class="btn btn-secondary form-control" 
+                        target="_blank">Print</a>
+                        {% else %}
+                    <input type="submit" value="Submit for Printing" name="cmd_button" 
+                        class="btn btn-primary form-control" 
+                        onclick="return confirmMessage('Type YES to submit this record for Printing.');">
+                        {% endif %}
+                    {% endif %}
+                </div>
+                <div class="col-4">
+                    {% if not form.cancelled and form.id %}
+                    <a href="{{ url_for('purchase_order_extra.cancel', record_id=form.id) }}" 
+                        class="btn btn-danger form-control" 
+                        onclick="return confirmMessage('Type YES to cancel this record.');">Cancel Order</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <hr>
+    
+    <div class="row mb-2">
+        <div class="col-3">
+            <label for="record_date" class="form-label">Date</label>
+            <input type="date" name="record_date" value="{{ form.record_date }}" class="form-control" {% if form.locked_ %}disabled{% endif %}>
+            {% if form.errors.get('record_date') %}
+            <p class="text-danger">{{ form.errors.get('record_date') }}</p>
+            {% endif %}
+        </div>
+        <div class="col-3">
+            <label for="purchase_order_number" class="form-label">Purchase Order No.</label>
+            <input type="text" name="purchase_order_number" value="{{ form.purchase_order_number }}" class="form-control" {% if form.locked_ %}disabled{% endif %}>
+            {% if form.errors.get('purchase_order_number') %}
+            <p class="text-danger">{{ form.errors.get('purchase_order_number') }}</p>
+            {% endif %}    
+        </div>
+        <div class="col-3">
+            <label for="currency" class="form-label">Currency</label>
+            <input type="text" name="currency" value="{{ form.currency }}" class="form-control" {% if form.locked_ %}disabled{% endif %}>
+            {% if form.errors.get('currency') %}
+            <p class="text-danger">{{ form.errors.get('currency') }}</p>
+            {% endif %}    
+        </div>
+        <div class="col-3">
+            <label for="terms" class="form-label">Terms</label>
+            <input type="text" name="terms" value="{{ form.terms }}" class="form-control" {% if form.locked_ %}disabled{% endif %}>
+            {% if form.errors.get('terms') %}
+            <p class="text-danger">{{ form.errors.get('terms') }}</p>
+            {% endif %}    
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-6">
+            <label for="vendor_name" class="form-label">Vendor</label>
+            <input type="text" id="vendor_name" name="vendor_name" value="{{ form.vendor_name }}" 
+                        class="form-control upper-case ui-autocomplete-input" 
+                        {% if form.submitted %} readonly {% else %} autocomplete="off" {% endif %} 
+                        spellcheck="false" data-ms-editor="true">
+
+                        {% if form.errors.get('vendor_name') %}
+                        <p class="text-danger">{{ form.errors.get('vendor_name') }}</p>
+                        {% endif %}
+
+                        <script>
+                            $(function() {
+                                $.ajax({
+                                    url: '{{ url_for("vendor._autocomplete") }}'
+                                    }).done(function (data){
+                                        $('#vendor_name').autocomplete({
+                                            source: data,
+                                            minLength: 2
+                                        });
+                                    });
+                                });
+                        </script>
+        </div>
+
+        <div class="col-6">
+            <label for="order_note" class="form-label">Order Note</label>
+            <textarea 
+                name="order_note" 
+                rows="5" 
+                class="form-control upper-case"  
+                autocomplete="off" 
+                {% if form.locked_ %}readonly{% endif %} 
+                >{{ form.order_note }}</textarea>
+            {% if form.errors.get('order_note') %}
+            <p class="text-danger">{{ form.errors.get('order_note') }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-6">
+            <label for="prepared_by" class="form-label">Prepared by</label>
+            <input type="text" name="prepared_by" value="{{ form.prepared_by }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+            {% if form.errors.get('prepared_by') %}
+            <p class="text-danger">{{ form.errors.get('prepared_by') }}</p>
+            {% endif %}    
+        </div>
+
+        <div class="col-6">
+            <label for="requested_by" class="form-label">Requested by</label>
+            <input type="text" name="requested_by" value="{{ form.requested_by }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+            {% if form.errors.get('requested_by') %}
+            <p class="text-danger">{{ form.errors.get('requested_by') }}</p>
+            {% endif %}    
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-6">
+            <label for="checked_by" class="form-label">Checked by</label>
+            <input type="text" name="checked_by" value="{{ form.checked_by }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+            {% if form.errors.get('checked_by') %}
+            <p class="text-danger">{{ form.errors.get('checked_by') }}</p>
+            {% endif %}    
+        </div>
+
+        <div class="col-6">
+            <label for="approved_by" class="form-label">Approved by</label>
+            <input type="text" name="approved_by" value="{{ form.approved_by }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+            {% if form.errors.get('approved_by') %}
+            <p class="text-danger">{{ form.errors.get('approved_by') }}</p>
+            {% endif %}    
+        </div>
+    </div>
+        <div class="row mb-2">
+        <div class="col-6">
+            <label for="discount_note" class="form-label">Discount Remark</label>
+            <input type="text" name="discount_note" value="{{ form.discount_note }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+            {% if form.errors.get('discount_note') %}
+            <p class="text-danger">{{ form.errors.get('discount_note') }}</p>
+            {% endif %}    
+        </div>
+
+        <div class="col-6">
+            <label for="discount" class="form-label">Discount Amount</label>
+            <input type="text" name="discount" value="{{ form.discount }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+            {% if form.errors.get('discount') %}
+            <p class="text-danger">{{ form.errors.get('discount') }}</p>
+            {% endif %}    
+        </div>
+    </div>
+        <table class="table table-striped table-light">
+            <thead>
+                <tr>
+                    <th>PR No.</th>
+                    <th>Quantity</th>
+                    <th>Measure</th>
+                    <th>Description</th>
+                    <th>Unit Price</th>
+                    <th>Amount</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody>                
+                {% for i, form_detail in form.details %}
+                <tr>
+                    <td>
+                        {% if form_detail.id %}
+                        <input type="text" name="purchase_order_number-{{ i }}" value="{{ form_detail.purchase_order_number }}" hidden>
+                        {% endif %}
+                        <input type="text" name="purchase_request_number-{{ i }}" value="{{ form_detail.purchase_request_number }}" class="form-control" {% if form.locked_ %}readonly{% endif %}>
+                        {% if form_detail.errors.get('purchase_request_number') %}
+                        <p class="text-danger">{{ form_detail.errors.get('purchase_request_number') }}</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <input type="number" name="quantity-{{ i }}" step="any" value="{{ form_detail.quantity }}" class="form-control currency" {% if form.locked_ %}readonly{% endif %}>
+                        {% if form_detail.errors.get('quantity') %}
+                        <p class="text-danger">{{ form_detail.errors.get('quantity') }}</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <input type="text" id="measure_name-{{ i }}" name="measure_name-{{ i }}" value="{{ form_detail.measure_name }}" 
+                        class="form-control upper-case ui-autocomplete-input" 
+                        {% if form.submitted %} readonly {% else %} autocomplete="off" {% endif %} 
+                        spellcheck="false" data-ms-editor="true">
+
+                        {% if form_detail.errors.get('measure_name') %}
+                        <p class="text-danger">{{ form_detail.errors.get('measure_name') }}</p>
+                        {% endif %}
+
+                        <script>
+                            $(function() {
+                                $.ajax({
+                                    url: '{{ url_for("measure._autocomplete") }}'
+                                    }).done(function (data){
+                                        $('#measure_name-{{ i }}').autocomplete({
+                                            source: data,
+                                            minLength: 2
+                                        });
+                                    });
+                                });
+                        </script>
+
+                    </td>
+                    <td>
+                        <input type="text" id="raw_material_name-{{ i }}" name="raw_material_name-{{ i }}" value="{{ form_detail.raw_material_name }}" 
+                        class="form-control upper-case ui-autocomplete-input" 
+                        {% if form.submitted %} readonly {% else %} autocomplete="off" {% endif %} 
+                        spellcheck="false" data-ms-editor="true">
+
+                        {% if form_detail.errors.get('raw_material_name') %}
+                        <p class="text-danger">{{ form_detail.errors.get('raw_material_name') }}</p>
+                        {% endif %}
+
+                        <script>
+                            $(function() {
+                                $.ajax({
+                                    url: '{{ url_for("raw_material._autocomplete") }}'
+                                    }).done(function (data){
+                                        $('#raw_material_name-{{ i }}').autocomplete({
+                                            source: data,
+                                            minLength: 2
+                                        });
+                                    });
+                                });
+                        </script>
+                    </td>
+                    <td>
+                        <input type="text" name="unit_price-{{ i }}" step="any" value="{{ form_detail.unit_price }}" class="form-control currency right_align" {% if form.locked_ %}readonly{% endif %}>
+                        {% if form_detail.errors.get('unit_price') %}
+                        <p class="text-danger">{{ form_detail.errors.get('unit_price') }}</p>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <input type="text" name="amount-{{ i }}" step="any" value="{{ form_detail.unit_price * form_detail.quantity }}" class="form-control currency" {% if form.locked_ %}readonly{% endif %}>
+                    </td>
+                    <td>
+                        <input type="text" name="side_note-{{ i }}" value="{{ form_detail.side_note }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+                        {% if form_detail.errors.get('side_note') %}
+                        <p class="text-danger">{{ form_detail.errors.get('side_note') }}</p>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </form>
+
+
+    {% for i, form_detail in form.details %}
+    <script>
+        $(function () {
+            $.ajax({
+                url: '{{ url_for("raw_material._autocomplete") }}'
+            }).done(function (data) {
+                $('#raw_material_id-{{ i }}').autocomplete({
+                    source: data,
+                    minLength: 0
+                });
+            });
+        });
+    </script>
+    {% endfor %}
+
+    <script>
+        // Get the input element
+        var inputElement = document.getElementByClassName('currency');
+
+        // When the input loses focus
+        inputElement.addEventListener('blur', function(event) {
+            var value = parseFloat(event.target.value.replace(/,/g, '')); // Remove commas, if any
+            event.target.value = value.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        });
+
+        // When the input gains focus
+        inputElement.addEventListener('focus', function(event) {
+            var value = parseFloat(event.target.value.replace(/,/g, '')); // Remove commas, if any
+            event.target.value = value.toFixed(2);
+        });
+
+    </script>
+
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const rowCount = {{ form.details|length }};
+        
+        for (let i = 0; i < rowCount; i++) {
+            const quantityInput = document.querySelector(`input[name="quantity-${i}"]`);
+            const unitPriceInput = document.querySelector(`input[name="unit_price-${i}"]`);
+            const amountInput = document.querySelector(`input[name="amount-${i}"]`);
+
+            function computeAmount() {
+                let quantity = parseFloat(quantityInput.value.replace(/,/g, '')) || 0;
+                let unitPrice = parseFloat(unitPriceInput.value.replace(/,/g, '')) || 0;
+                let amount = quantity * unitPrice;
+
+                amountInput.value = amount.toLocaleString('en-US', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                });
+            }
+
+            if (quantityInput && unitPriceInput && amountInput) {
+                quantityInput.addEventListener('input', computeAmount);
+                unitPriceInput.addEventListener('input', computeAmount);
+            }
+        }
+    });
+</script>
+{% endblock %}

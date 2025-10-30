@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Request{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-danger">Pending Purchase Request List</h1>
+
+    
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>PR No.</th>
+                    <th>Quantity</th>
+                    <th>Measure</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    {% for item in row.balance() %}
+                        {% if item.quantity %}
+                <tr>
+                    <td>{{ row.record_date }}</td>
+                    <td>{{ row.purchase_request_number }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>{{ item.measure.measure_name }}</td>
+                    <td>{{ item.raw_material.raw_material_name }}</td>
+                </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+        
+    
+</div>
+{% endblock %}

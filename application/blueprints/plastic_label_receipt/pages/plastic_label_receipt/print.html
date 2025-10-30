@@ -1,0 +1,200 @@
+{% extends "base_print.html" %}
+
+{% block title %}Printing PR No. {{ plastic_label_receipt.plastic_label_receipt_number }}{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        font-size: 12px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        font-size: 1em;
+    }
+
+    td {
+        font-size: 1em;
+        height: 30px; /* Adjust as needed */
+        border: 1px solid #ccc; /* Optional: For better visibility */
+    }
+</style>
+
+<style>
+    .line-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .line {
+        width: 100%;
+        border-top: 1px solid black;
+        margin: 0;
+    }
+    
+    .text {
+        margin: 0;
+        padding: 0;
+        line-height: 1; /* Reduces the spacing */
+    }
+    
+</style>
+
+<style>
+    #cancelled {
+        position: absolute;
+        margin-top: 30%;
+        text-align: center;
+        width: 100%;
+        color: red;
+        font-size: 48px;
+        opacity: 0.5;
+    }
+
+    .signatory {
+        margin-top: 25px;
+    }
+
+    .signatory_name, .information{
+        border-bottom: 1px solid black; 
+    }
+
+    .signatory_name{
+        text-align: center;
+        font-size: 1em;
+    }
+
+    .information{
+        text-align: left;
+    }
+
+    .centered {
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div>
+{% if plastic_label_receipt.cancelled %}
+<p id="cancelled">C A N C E L L E D</p>
+{% endif %}
+
+{% if g.company_name %}
+<h1 class="centered">{{ g.company_name }}</h1>
+{% else %}
+<h1 class="centered">Company Name</h1>
+{% endif %}
+<h2 class="centered">RECEIVING REPORT - LABELS</h2>
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <label class="col-4">Date</label>
+            <span class="col-4 signatory_name">{{ plastic_label_receipt.formatted_record_date }}</span>
+        </div>
+    </div>
+    <div class="col" style="text-align: right">
+        <span>
+            <label>RR No.</label>
+            <span style="color:red; ; padding-right: 10px;"><strong>{{ plastic_label_receipt.plastic_label_receipt_number }}</strong></span>
+        </span>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <label class="col-2">Vendor</label>
+            <span class="col-9 information">{{ plastic_label_receipt.vendor.vendor_name }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <label class="col-2">Packing List</label>
+            <span class="col-9 information">{{ plastic_label_receipt.packing_list }}</span>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col">
+        <div class="row">
+            <label class="col-2">Notes</label>
+            <span class="col-9 information">{{ plastic_label_receipt.notes }}</span>
+        </div>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="centered">Quantity</th>
+            <th class="centered">Measure</th>
+            <th class="centered">Description</th>
+            <th class="centered">Pallets/Box</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in range(10) %}
+        <tr>
+            {% if plastic_label_receipt.plastic_label_receipt_details[i] is defined %}
+                <td class="centered">{{ plastic_label_receipt.plastic_label_receipt_details[i].formatted_quantity }}</td>
+                <td class="centered">{{ plastic_label_receipt.plastic_label_receipt_details[i].measure.measure_name }}</td>
+                <td>{{ plastic_label_receipt.plastic_label_receipt_details[i].plastic_label.label_name }}</td>
+                <td>{{ plastic_label_receipt.plastic_label_receipt_details[i].side_note }}</td>
+            {% else %}
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>    
+
+<div class="row">
+    <div class="col-4 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="prepared_by">Reported by:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="prepared_by">{{ plastic_label_receipt.reported_by }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-4 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="prepared_by">Received by:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="checked_by">{{ plastic_label_receipt.received_by }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-4 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="prepared_by">Noted by:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="checked_by">{{ plastic_label_receipt.noted_by }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}

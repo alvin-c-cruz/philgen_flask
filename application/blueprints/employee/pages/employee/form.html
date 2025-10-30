@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% from "macros_simple_form.html" import text_box, date_box ,text_area, save_button %}
+
+{% block title %}Employee{% endblock %}
+
+{% block styles %}
+<style>
+    div.emergency-contact {
+        border: 1px solid black;
+        padding: 10px;
+        background-color: #f9f9e5; /* Light yellow background */
+        margin: 20px auto; /* Center the div */
+        font-family: Arial, sans-serif;
+    }
+
+    div.emergency-contact label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    div.emergency-contact input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin-bottom: 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container p-5">
+    {% if form.id %}
+    <h1 class="mb-4">Edit Employee</h1>
+    <form action="{{ url_for('employee.edit', record_id=form.id) }}" method="post">
+        <input type="number" name="record_id" value="{{ form.id }}" hidden>
+        {% else %}
+    <h1 class="mb-4">Add Employee</h1>
+    <form action="{{ url_for('employee.add') }}" method="post">
+        {% endif %}
+    
+        {{ text_box(form, "Last Name", "last_name", form.last_name, autofocus=True) }}
+        {{ text_box(form, "First Name", "first_name", form.first_name, autofocus=False) }}
+        {{ text_box(form, "Middle Name", "middle_name", form.middle_name, autofocus=False) }}
+        {{ date_box(form, "Birth Date", "birth_date", form.birth_date, autofocus=False) }}
+        {{ text_area(form, "Permanent Address", "permanent_address", 5, form.permanent_address, autofocus=False) }}
+        {{ text_area(form, "City Address", "city_address", 5, form.city_address, autofocus=False) }}
+        {{ date_box(form, "Date Started Probationary", "date_probationary", form.date_probationary, autofocus=False) }}
+        {{ date_box(form, "Date Started Regular", "date_regular", form.date_regular, autofocus=False) }}
+        {{ text_box(form, "Employee No.", "employee_number", form.employee_number, autofocus=False) }}
+        {{ text_box(form, "TIN", "tin", form.tin, autofocus=False) }}
+        {{ text_box(form, "SSS No.", "sss_number", form.sss_number, autofocus=False) }}
+        {{ text_box(form, "PHIC No.", "phic_number", form.phic_name, autofocus=False) }}
+        {{ text_box(form, "HDMF No.", "hdmf_number", form.hdmf_number, autofocus=False) }}
+        {{ text_box(form, "Contant No.", "contact_number", form.contact_number, autofocus=False) }}
+        {{ text_box(form, "Email Address", "email_address", form.email_address, autofocus=False, auto_upper=False) }}.
+        <div class="emergency-contact">
+            <label for="">Person to contant in case of emergency</label>
+            {{ text_box(form, "Name", "contact_person_name", form.contact_person_name, autofocus=False) }}
+            {{ text_box(form, "Relationship to employee", "contact_person_relationship", form.contact_person_relationship, autofocus=False) }}
+            {{ text_box(form, "Contact no.", "contact_person_number", form.contact_person_number, autofocus=False) }}
+            {{ text_area(form, "Address", "contact_person_address", form.contact_person_address, autofocus=False) }}
+        </div>
+        {{  save_button() }}
+
+    </form>
+</div>
+{% endblock %}

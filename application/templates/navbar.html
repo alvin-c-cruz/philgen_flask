@@ -1,0 +1,335 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Home</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+
+          {% if current_user.is_active %}
+
+          <!-- Sales Menu -->
+            {% 
+              if ("Product" in current_user.user_roles)
+              or ("Sales Order" in current_user.user_roles) 
+              or ("Delivery Receipt" in current_user.user_roles) 
+            %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Sales
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Product" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('product.home') }}">Product List</a></li>
+                <li><hr class="dropdown-divider"></li>
+                {% endif %}
+                {% if "Sales Order" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('sales_order.home') }}">Job Order</a></li>
+                {% endif %}
+                {% if "Delivery Receipt" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('delivery_receipt.home') }}">Delivery Receipt w/ Invoice</a></li>
+                {% endif %}
+                {% if "Delivery Receipt Extra" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('delivery_receipt_extra.home') }}">Delivery Receipt Only</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if "Delivery Receipt" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('delivery_receipt.delivery_summary') }}">Delivery Summary</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Sales Menu -->
+
+            <!-- Production Report -->
+            {% if ("Plastic Product Component" in current_user.user_roles)
+            or ("Plastic Component Production" in current_user.user_roles) %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Plastic Product Component
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Plastic Product Component" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('plastic_product_component.home') }}">Plastic Product Component List</a></li>
+                <li><hr class="dropdown-divider"></li>
+                {% endif %}
+                {% if "Plastic Component Production" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('plastic_product_component_production.home') }}">Plastic Component Production</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Production Report -->
+
+            <!-- Plastic Raw Materials Menu -->
+            {% if ("Plastic Raw Material" in current_user.user_roles) 
+            or ("Plastic Raw Material Status" in current_user.user_roles)
+            or ("Plastic Raw Material Receiving Report" in current_user.user_roles)
+            or ("Plastic Raw Material Issuance" in current_user.user_roles)
+            or ("Plastic Raw Material Return" in current_user.user_roles)
+            or ("Plastic Raw Material Adjustment" in current_user.user_roles) %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Plastic Raw Material
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Plastic Raw Material" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('plastic_raw_material.home') }}">Plastic Raw Material List</a></li>
+                {% endif %}
+                {% if "Plastic Raw Material Status" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('plastic_raw_material_status.home') }}">Plastic Raw Material Status</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if "Plastic Raw Material Receiving Report" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('plastic_raw_material_receipt.home') }}">Receipts (+)</a></li>
+                {% endif %}
+                {% if "Plastic Raw Material Issuance" in current_user.user_roles %}
+                <li><a class="dropdown-item" href="{{ url_for('plastic_raw_material_issuance.home') }}">Issuances (-)</a></li>
+                {% endif %}
+                {% if "Plastic Raw Material Return" in current_user.user_roles %}
+                <li><a class="dropdown-item" href="{{ url_for('plastic_raw_material_return.home') }}">Returns (+)</a></li>
+                {% endif %}
+                {% if "Plastic Raw Material Adjustment" in current_user.user_roles %}
+                <li><a class="dropdown-item" href="{{ url_for('plastic_raw_material_adjustment.home') }}">Adjustments (+, -)</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Raw Materials Menu -->
+
+            <!-- Labels Menu -->
+            {% if ("Plastic Label" in current_user.user_roles) 
+            or ("Plastic Label Status" in current_user.user_roles)
+            or ("Plastic Label Receiving Report" in current_user.user_roles)
+            or ("Plastic Label Issuance" in current_user.user_roles)
+            or ("Plastic Label Return" in current_user.user_roles)
+            or ("Plastic Label Adjustment" in current_user.user_roles) %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Plastic Labels
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Plastic Label" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('plastic_label.home') }}">Label List</a></li>
+                {% endif %}
+                {% if "Plastic Label Status" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('plastic_label_status.home') }}">Label Status</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if "Plastic Label Receiving Report" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('plastic_label_receipt.home') }}">Receipts (+)</a></li>
+                {% endif %}
+                {% if "Plastic Label Issuance" in current_user.user_roles %}
+                <li><a class="dropdown-item" href="{{ url_for('plastic_label_issuance.home') }}">Issuances (-)</a></li>
+                {% endif %}
+                {% if "Plastic Label Return" in current_user.user_roles %}
+                <li><a class="dropdown-item" href="{{ url_for('plastic_label_return.home') }}">Returns (+)</a></li>
+                {% endif %}
+                {% if "Plastic Label Adjustment" in current_user.user_roles %}
+                <li><a class="dropdown-item" href="{{ url_for('plastic_label_adjustment.home') }}">Adjustments (+, -)</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Labels Menu -->
+
+            <!-- Purchases Request Menu -->
+            {% if ("Purchase Request" in current_user.user_roles) 
+            or ("Purchase Request" in current_user.user_roles) 
+            %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Purchase Request
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Purchase Request" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('purchase_request.home') }}">Purchase Request List</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('purchase_request.pending') }}">Pending Requests</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if "Purchase Request" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('purchase_request.add') }}">Create Purchase Request</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Purchase Request Menu -->
+
+            <!-- Purchases Order Menu -->
+            {% if ("Purchase Order" in current_user.user_roles) 
+            or ("Purchase Order" in current_user.user_roles) 
+            %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Purchase Order
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Purchase Order" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('purchase_order.home') }}">Purchase Order List</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if "Purchase Order" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('purchase_order.add') }}">Create Purchase Order</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Purchase Order Menu -->
+
+
+            <!-- Purchases Order Extra Menu -->
+            {% if ("Purchase Order Extra" in current_user.user_roles) 
+            or ("Purchase Order Extra" in current_user.user_roles) 
+            %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Purchase Order Extra
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Purchase Order Extra" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('purchase_order_extra.home') }}">Purchase Order Extra List</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if "Purchase Order Extra" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('purchase_order_extra.add') }}">Create Purchase Order Extra</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Purchase Order Extra Menu -->
+
+            <!-- Receiving Report Menu -->
+            {% if ("Receiving Report" in current_user.user_roles) 
+            or ("Receiving Report" in current_user.user_roles) 
+            %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Receiving Report
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Receiving Report" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('receiving_report.home') }}">Receiving Report List</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if "Receiving Report" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('receiving_report.add') }}">Create Receiving Report</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Receiving Report Menu -->
+
+
+            <!-- Issuance Menu -->
+            {% if ("Issuance" in current_user.user_roles) 
+            or ("Issuance" in current_user.user_roles) 
+            %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                MRIS
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Issuance" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('issuance.home') }}">MRIS List</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if "Issuance" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('issuance.add') }}">Create MRIS</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Issuance Menu -->
+
+
+            <!-- Production Tincan Menu -->
+            {% if ("Production Tincan" in current_user.user_roles) 
+            or ("Production Tincan" in current_user.user_roles) 
+            %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Production Tincan
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Production Tincan" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('production_tincan.home') }}">Production Report List</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if "Production Tincan" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('production_tincan.add') }}">Create Production Report</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Production Tincan Menu -->
+
+            <!-- Options Menu -->
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Options
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Department" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('department.home') }}">Department</a></li>
+                {% endif %}
+
+                {% if "Raw Material" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('raw_material.home') }}">Raw Material</a></li>
+                {% endif %}
+
+                {% if "Employee" in current_user.user_roles %}    
+                  <li><a class="dropdown-item" href="{{ url_for('employee.home') }}">Employee</a></li>
+                  {% endif %}
+                  
+                {% if "Operator" in current_user.user_roles %}    
+                  <li><a class="dropdown-item" href="{{ url_for('operator.home') }}">Operator</a></li>
+                  {% endif %}
+                  
+                  {% if "Customer" in current_user.user_roles %}    
+                  <li><a class="dropdown-item" href="{{ url_for('customer.home') }}">Customer as seen in Delivery Receipt</a></li>
+                  {% endif %}
+                  {% if "Sales Order Customer" in current_user.user_roles %}    
+                  <li><a class="dropdown-item" href="{{ url_for('sales_order_customer.home') }}">Customer as seen in Job Order</a></li>
+                  {% endif %}
+                  {% if "Product" in current_user.user_roles %}    
+                  <li><a class="dropdown-item" href="{{ url_for('product.home') }}">Products</a></li>
+                  {% endif %}
+                  {% if "Vendor" in current_user.user_roles %}    
+                  <li><a class="dropdown-item" href="{{ url_for('vendor.home') }}">Vendor</a></li>
+                  {% endif %}
+                  {% if "Measure" in current_user.user_roles %}    
+                  <li><a class="dropdown-item" href="{{ url_for('measure.home') }}">Measure</a></li>
+                  {% endif %}
+                  {% if "Shift" in current_user.user_roles %}    
+                  <li><a class="dropdown-item" href="{{ url_for('shift.home') }}">Shift</a></li>
+                  {% endif %}
+                  {% if "Plastic Component Status" in current_user.user_roles %}    
+                  <li><a class="dropdown-item" href="{{ url_for('plastic_product_component_status.home') }}">Remarks</a></li>
+                  {% endif %}
+                  {% if "Injection Machine" in current_user.user_roles %}    
+                  <li><a class="dropdown-item" href="{{ url_for('injection_machine.home') }}">Injection Machine</a></li>
+                  {% endif %}
+                  {% if current_user.admin %}
+                  <li class="nav-item">
+                      <a class="dropdown-item" href="{{ url_for('user.user_list') }}">User Register</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="dropdown-item" href="{{ url_for('user.change_password') }}">User Change Password</a>
+                  </li>
+                  {% endif %}
+              </ul>
+          </li>
+            <!-- End of Options Menu -->
+          {% endif %}
+          <li class="nav-item">
+            <span class="nav-link">Logged in as {{ current_user.user_name }}</span>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-link nav-link custom-border" href="{{ url_for('user.logout') }}">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  

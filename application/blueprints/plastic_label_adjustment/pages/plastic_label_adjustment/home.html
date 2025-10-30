@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Plastic Label Adjustment{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-danger">Plastic Label Adjustment</h1>
+    <a href="{{ url_for('plastic_label_adjustment.add') }}" class="btn btn-success mb-3">Add Plastic Label Adjustment</a>
+
+    <form method="post" action="{{ url_for('plastic_label_adjustment.home') }}" class="mb-3">
+        <div class="form row">
+            <div class="col-md-4">
+                <label for="date_from">Date From:</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from }}">
+            </div>
+            <div class="col-md-4">
+                <label for="date_to">Date To:</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary mt-4">Apply Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Adj No.</th>
+                            <th>Notes</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plastic_label_adjustment in plastic_label_adjustments %}
+                        <tr>
+                            <td>{{ plastic_label_adjustment.formatted_record_date }}</td>
+                            <td>{{ plastic_label_adjustment.plastic_label_adjustment_number }}</td>
+                            <td>{{ plastic_label_adjustment.notes }}</td>
+                            <td>
+                                {% if plastic_label_adjustment.cancelled %}
+                                <p style="color: red;">Cancelled {{ plastic_label_adjustment.formatted_cancelled }}</p>
+                                {% endif %}
+                                {% if plastic_label_adjustment.submitted %}
+                                <p>For approval {{ plastic_label_adjustment.formatted_submitted }}</p>
+                                {% endif %}
+                                {% if not (plastic_label_adjustment.submitted or plastic_label_adjustment.cancelled) %}
+                                <p style="color: green;">DRAFT</p>
+                                {% endif %}    
+                            </td>
+                            <td>
+                                {% if plastic_label_adjustment.submitted or plastic_label_adjustment.cancelled %}
+                                    <a href="{{ url_for('plastic_label_adjustment.view', record_id=plastic_label_adjustment.id) }}"
+                                    class="btn btn-warning btn-sm">View</a>
+                                    {% if current_user.admin %}
+                                    <a href="{{ url_for('plastic_label_adjustment.unlock', record_id=plastic_label_adjustment.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to unlock this record.')">Unlock</a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ url_for('plastic_label_adjustment.edit', record_id=plastic_label_adjustment.id) }}"
+                                    class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="{{ url_for('plastic_label_adjustment.cancel', record_id=plastic_label_adjustment.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to cancel this record.')">Cancel</a>
+                                    
+                                {% endif %}
+                                {% if current_user.admin %}
+                                <a href="{{ url_for('plastic_label_adjustment.delete', record_id=plastic_label_adjustment.id) }}"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirmMessage('Type YES to Delete this record.')">Delete</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% if plastic_label_adjustments|length == 0 %}
+                        <tr>
+                            <td colspan="6" class="text-center">No records found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

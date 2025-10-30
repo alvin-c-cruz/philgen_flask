@@ -1,0 +1,277 @@
+{% extends "base_print.html" %}
+
+{% block title %}Printing DR No. {{ obj.delivery_receipt_number }}{% endblock %}
+
+{% block styles %}
+<style>
+    body {
+        font-family: Calibri, Arial, sans-serif;
+        font-size: 14px; 
+        {% if not (obj.submitted or obj.cancelled) %}
+        color: red;
+        {% endif %}
+    }
+
+    .delivery_receipt_number {
+        position: absolute;
+        font-size: {{ delivery_receipt_number_position.font_size }}px;
+        left: {{ delivery_receipt_number_position.left }}mm;
+        top: {{ delivery_receipt_number_position.top }}mm;
+    }
+
+    .customer_name {
+        position: absolute;
+        font-size: {{ customer_name_position.font_size }}px;
+        left: {{ customer_name_position.left }}mm;
+        top: {{ customer_name_position.top }}mm;
+    }
+
+    .record_date {
+        position: absolute;
+        font-size: {{ record_date_position.font_size }}px;
+        left: {{ record_date_position.left }}mm;
+        top: {{ record_date_position.top }}mm;
+    }
+
+    .customer_address {
+        position: absolute;
+        font-size: {{ customer_address_position.font_size }}px;
+        left: {{ customer_address_position.left }}mm;
+        top: {{ customer_address_position.top }}mm;
+        line-height: 0.8;
+    }
+
+    .customer_address pre {
+        margin: 0; 
+        overflow: hidden; /* Hides the scroll bars */
+    }
+
+    .po_number {
+        position: absolute;
+        font-size: {{ po_number_position.font_size }}px;
+        left: {{ po_number_position.left }}mm;
+        top: {{ po_number_position.top }}mm;
+    }
+
+    .customer_tin {
+        position: absolute;
+        font-size: {{ customer_tin_position.font_size }}px;
+        left: {{ customer_tin_position.left }}mm;
+        top: {{ customer_tin_position.top }}mm;
+    }
+
+    .customer_business_style {
+        position: absolute;
+        font-size: {{ customer_business_style_position.font_size }}px;
+        left: {{ customer_business_style_position.left }}mm;
+        top: {{ customer_business_style_position.top }}mm;
+    }
+
+    .so_number {
+        position: absolute;
+        font-size: {{ so_number_position.font_size }}px;
+        left: {{ so_number_position.left }}mm;
+        top: {{ so_number_position.top }}mm;
+    }
+
+    .vendor_code {
+        position: absolute;
+        font-size: {{ vendor_code_position.font_size }}px;
+        left: {{ vendor_code_position.left }}mm;
+        top: {{ vendor_code_position.top }}mm;
+    }
+
+    .salesman {
+        position: absolute;
+        font-size: {{ salesman_position.font_size }}px;
+        left: {{ salesman_position.left }}mm;
+        top: {{ salesman_position.top }}mm;
+    }
+
+    .articles {
+        position: absolute;
+        left: {{ articles_position.left }}mm;
+        top: {{ articles_position.top }}mm;
+    }
+
+    .quantity {
+        width: {{ quantity_position.width }}mm;
+        font-size: {{ quantity_position.font_size }}px;
+        text-align: right;
+        display: inline-block;
+        padding-right: 20px;
+    }
+
+    .measure_name {
+        width: {{ measure_name_position.width }}mm;
+        font-size: {{ measure_name_position.font_size }}px;
+        text-align: center;
+        display: inline-block;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .product_code {
+        width: {{ product_code_position.width }}mm;
+        font-size: {{ product_code_position.font_size }}px;
+        display: inline-block;
+    }
+
+    .product_name {
+        width: {{ product_name_position.width }}mm;
+        font-size: {{ product_name_position.font_size }}px;
+        display: inline-block;
+    }
+
+    .notes {
+        width: {{ notes_position.width }}mm;
+        font-size: {{ notes_position.font_size }}px;
+        display: inline-block;
+    }
+
+    .notes pre {
+        margin: 0; 
+        overflow: hidden; /* Hides the scroll bars */
+    }
+
+    .product_code_description {
+        margin-left: {{ product_code_description_position.margin_left }}mm;
+        font-size: {{ product_code_description_position.font_size }}px;
+    }
+
+    .stacking, .production_date {
+        font-family: Calibri;
+    }
+
+    .stacking {
+        margin-left: {{ stacking_position.margin_left }}mm;
+        font-size: {{ stacking_position.font_size }}px;
+    }
+
+    .production_date {
+        margin-left: {{ production_date_position.margin_left }}mm;
+        font-size: {{ production_date_position.font_size }}px;
+    }
+
+    .stacking, .production_date {
+        line-height: 1;
+        overflow: hidden; /* Hides the scroll bars */
+    }
+
+    .checked_by {
+        position: absolute;
+        font-size: {{ checked_by_position.font_size }}px;
+        left: {{ checked_by_position.left }}mm;
+        top: {{ checked_by_position.top }}mm;
+    }
+
+    .carrier {
+        position: absolute;
+        font-size: {{ carrier_position.font_size }}px;
+        left: {{ carrier_position.left }}mm;
+        top: {{ carrier_position.top }}mm;
+    }
+
+    .approved_by {
+        position: absolute;
+        font-size: {{ approved_by_position.font_size }}px;
+        left: {{ approved_by_position.left }}mm;
+        top: {{ approved_by_position.top }}mm;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<strong class="delivery_receipt_number">
+    {{ obj.delivery_receipt_number }}
+</strong>
+
+<strong class="customer_name">
+    {{ obj.customer.registered_name }}
+</strong>
+
+<strong class="record_date">
+    {{ obj.formatted_record_date_dr }}
+</strong>
+
+<strong class="customer_address">
+    <pre>{{ obj.customer.delivery_address }}</pre>
+</strong>
+
+<strong class="po_number">
+    {{ obj.po_number }}
+</strong>
+
+<strong class="customer_tin">
+    {{ obj.customer.tin }}
+</strong>
+
+<strong class="customer_business_style">
+    {{ obj.customer.business_style }}
+</strong>
+
+<strong class="so_number">
+    {{ so_number }}
+</strong>
+
+<strong class="vendor_code">
+    {% if obj.customer.customer_code %}
+    VENDOR CODE: {{ obj.customer.customer_code }}
+    {% endif %}
+</strong>
+
+<strong class="salesman">
+    {{ obj.salesman }}
+</strong>
+
+<div class="articles">
+    {% for row in obj.delivery_receipt_details %}
+    <div>
+        <strong class="quantity">{{ row.formatted_quantity }}</strong>
+        <strong class="measure_name">{{ row.measure.measure_name }}</strong>
+        <strong class="product_code">
+            {% if row.product.customer_code %}
+            {{ row.product.customer_code }}
+            {% endif %}
+        </strong>
+        <strong class="product_name"
+        {% if obj.customer.registered_name == 'PACIFIC PAINT (BOYSEN) PHILS.' %}
+            style="padding-left: 90px;"
+        {% endif %}
+        >{{ row.product.product_name }}</strong>
+    </div>
+    {% endfor %}    
+    <div>
+        <strong class="quantity"></strong>
+        <strong class="measure_name"></strong>
+        <strong class="product_code"></strong>
+        <strong class="notes"><pre>{{ obj.notes }}</pre></strong>
+    </div>
+    {% if product_code %}
+    <strong class="product_code_description">PRODUCT CODE: {{ product_code }}</strong>
+    {% endif %}
+
+    {% if obj.stacking %}
+    <pre class="stacking" style="margin-top: 5mm;"><strong>{{ obj.stacking }}</strong></pre>
+    {% endif %}
+
+    {% if obj.production_date %}
+    <pre class="production_date"><strong>{{ obj.production_date }}</strong></pre>
+    {% endif %}
+</div>
+
+<strong class="checked_by">
+    {{ obj.checked_by }}
+</strong>
+
+<strong class="carrier">
+    {{ obj.carrier }}
+</strong>
+
+<strong class="approved_by">
+    {{ obj.approved_by }}
+</strong>
+
+{% endblock %}

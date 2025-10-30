@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% from "macros_simple_form.html" import text_box, save_button %}
+
+{% block title %}Plastic Product Component{% endblock %}
+
+{% block content %}
+<div class="container p-5">
+    {% if form.id %}
+    <h1 class="mb-4">Edit Plastic Product Component</h1>
+    <form action="{{ url_for('plastic_product_component.edit', record_id=form.id) }}" method="post">
+        <input type="number" name="plastic_product_component_id" value="{{ form.id }}" hidden>
+        {% else %}
+    <h1 class="mb-4">Add Plastic Product Component</h1>
+    <form action="{{ url_for('plastic_product_component.add') }}" method="post">
+        {% endif %}
+    
+        {{ text_box(form, "Plastic Product Component Name", "plastic_product_component_name", form.plastic_product_component_name, autofocus=True) }}
+        {{ text_box(form, "Component Code", "plastic_product_component_code", form.plastic_product_component_code, autofocus=False) }}
+        {{  save_button() }}
+
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Plastic Component Production{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-danger">Plastic Component Production</h1>
+    <a href="{{ url_for('plastic_product_component_production.add') }}" class="btn btn-success mb-3">Add Plastic Component Production</a>
+
+    <form method="post" action="{{ url_for('plastic_product_component_production.home') }}" class="mb-3">
+        <div class="form row">
+            <div class="col-md-4">
+                <label for="date_from">Date From:</label>
+                <input type="date" class="form-control" id="date_from" name="date_from" value="{{ date_from }}">
+            </div>
+            <div class="col-md-4">
+                <label for="date_to">Date To:</label>
+                <input type="date" class="form-control" id="date_to" name="date_to" value="{{ date_to }}">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary mt-4">Apply Filter</button>
+            </div>
+        </div>
+    </form>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Production No.</th>
+                            <th>Shift</th>
+                            <th>IM No.</th>
+                            <th>Notes</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for plastic_product_component_production in plastic_product_component_productions %}
+                        <tr>
+                            <td>{{ plastic_product_component_production.formatted_record_date }}</td>
+                            <td>{{ plastic_product_component_production.plastic_product_component_production_number }}</td>
+                            <td>{{ plastic_product_component_production.shift.shift_name }}</td>
+                            <td>{{ plastic_product_component_production.injection_machine.injection_machine_name }}</td>
+                            <td>{{ plastic_product_component_production.notes }}</td>
+                            <td>
+                                {% if plastic_product_component_production.cancelled %}
+                                <p style="color: red;">Cancelled {{ plastic_product_component_production.formatted_cancelled }}</p>
+                                {% endif %}
+                                {% if plastic_product_component_production.submitted %}
+                                <p>For Payment {{ plastic_product_component_production.formatted_submitted }}</p>
+                                {% endif %}
+                                {% if not (plastic_product_component_production.submitted or plastic_product_component_production.cancelled) %}
+                                <p style="color: green;">DRAFT</p>
+                                {% endif %}    
+                            </td>
+                            <td>
+                                {% if plastic_product_component_production.submitted or plastic_product_component_production.cancelled %}
+                                    <a href="{{ url_for('plastic_product_component_production.view', record_id=plastic_product_component_production.id) }}"
+                                    class="btn btn-warning btn-sm">View</a>
+                                    {% if current_user.admin %}
+                                    <a href="{{ url_for('plastic_product_component_production.unlock', record_id=plastic_product_component_production.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to unlock this record.')">Unlock</a>
+                                    {% endif %}
+                                {% else %}
+                                    <a href="{{ url_for('plastic_product_component_production.edit', record_id=plastic_product_component_production.id) }}"
+                                    class="btn btn-warning btn-sm">Edit</a>
+                                    <a href="{{ url_for('plastic_product_component_production.cancel', record_id=plastic_product_component_production.id) }}"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirmMessage('Type YES to cancel this record.')">Cancel</a>
+                                    
+                                {% endif %}
+                                {% if current_user.admin %}
+                                <a href="{{ url_for('plastic_product_component_production.delete', record_id=plastic_product_component_production.id) }}"
+                                class="btn btn-danger btn-sm"
+                                onclick="return confirmMessage('Type YES to Delete this record.')">Delete</a>
+                                {% endif %}
+                        </td>
+                        </tr>
+                        {% endfor %}
+                        {% if plastic_product_component_productions|length == 0 %}
+                        <tr>
+                            <td colspan="6" class="text-center">No records found.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
