@@ -356,7 +356,7 @@
                         </script>
                     </td>
                     <td>
-                        <input type="text" name="unit_price-{{ i }}" step="any" value="{{ form_detail.unit_price }}" class="form-control currency right_align" {% if form.locked_ %}readonly{% endif %}>
+                        <input type="number" name="unit_price-{{ i }}" step="any" value="{{ form_detail.unit_price }}" class="form-control currency" {% if form.locked_ %}readonly{% endif %}>
                         {% if form_detail.errors.get('unit_price') %}
                         <p class="text-danger">{{ form_detail.errors.get('unit_price') }}</p>
                         {% endif %}
