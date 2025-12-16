@@ -18,6 +18,7 @@ class SubForm:
     quantity: float = 0
     measure_id: int = 0
     raw_material_id: int = 0
+    notes: str = ""
     
     raw_material_name: str = ""
 
@@ -31,6 +32,7 @@ class SubForm:
         self.measure_id = row.measure_id
         self.raw_material_id = row.raw_material_id
         self.raw_material_name = row.raw_material.raw_material_name
+        self.notes = row.notes
 
     def validate(self):
         self.errors = {}
@@ -60,7 +62,8 @@ class SubForm:
             self.quantity, 
             self.measure_id, 
             self.raw_material_id, 
-            self.raw_material_name
+            self.raw_material_name,
+            self.notes
             ])    
         
 
@@ -114,7 +117,8 @@ class Form:
                         purchase_order_number=detail.purchase_order_number,
                         quantity=detail.quantity,
                         measure_id=detail.measure_id,
-                        raw_material_id=detail.raw_material_id                    
+                        raw_material_id=detail.raw_material_id,
+                        notes=detail.notes                    
                     )
                     db.session.add(new_detail)
                     db.session.commit()
@@ -154,7 +158,8 @@ class Form:
                             purchase_order_number=detail.purchase_order_number,
                             quantity=detail.quantity,
                             measure_id=detail.measure_id,
-                            raw_material_id=detail.raw_material_id
+                            raw_material_id=detail.raw_material_id,
+                            notes=detail.notes
                             )
                         db.session.add(row_detail)               
         db.session.commit()
@@ -206,6 +211,9 @@ class Form:
             raw_material = RawMaterial.query.filter_by(raw_material_name=raw_material_name).first()
             if raw_material:
                 self.details[i][1].raw_material_id = raw_material.id
+            
+            notes = order_form.get(f'notes-{i}')
+            self.details[i][1].notes = notes
 
     def validate_on_submit(self):
         self.errors = {}

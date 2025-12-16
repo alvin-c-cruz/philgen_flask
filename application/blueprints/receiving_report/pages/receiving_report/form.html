@@ -208,6 +208,7 @@
                     <th>Quantity</th>
                     <th>Measure</th>
                     <th>Description</th>
+                    <th>Remarks</th>
                 </tr>
             </thead>
             <tbody>                
@@ -265,6 +266,12 @@
                                     });
                                 });
                         </script>
+                    </td>
+                    <td>
+                        <input type="text" name="notes-{{ i }}" value="{{ form_detail.notes }}" class="form-control">
+                        {% if form_detail.errors.get('notes') %}
+                        <p class="text-danger">{{ form_detail.errors.get('notes') }}</p>
+                        {% endif %}
                     </td>
                 </tr>
                 {% endfor %}

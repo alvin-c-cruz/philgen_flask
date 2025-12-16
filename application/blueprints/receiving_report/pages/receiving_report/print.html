@@ -4,49 +4,189 @@
 
 {% block styles %}
 <style>
-    body {
-        font-family: Calibri, Arial, sans-serif;
-        font-size: 14px; 
-        {% if not (obj.submitted or obj.cancelled) %}
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        font-size: 0.8em;
+    }
+
+    td {
+        font-size: 0.7em;
+        height: 30px; /* Adjust as needed */
+        border: 1px solid #ccc; /* Optional: For better visibility */
+    }
+</style>
+
+<style>
+    .margin {
+        margin: 10px;
+    }
+
+    .line-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .line {
+        width: 100%;
+        border-top: 1px solid black;
+        margin: 0;
+    }
+    
+    .text {
+        margin: 0;
+        padding: 0;
+        line-height: 1; /* Reduces the spacing */
+    }
+    
+</style>
+
+<style>
+    #cancelled {
+        position: absolute;
+        margin-top: 30%;
+        text-align: center;
+        width: 100%;
         color: red;
-        {% endif %}
+        font-size: 48px;
+        opacity: 0.5;
+    }
+
+    .signatory {
+        margin-top: 10px;
+    }
+
+    .signatory_name, .information{
+        border-bottom: 1px solid black; 
+    }
+
+    .signatory_name{
+        text-align: center;
+        font-size: 0.8em;
+    }
+
+    .signatory_label{
+        font-size: 0.7em;
+    }
+
+    .information{
+        text-align: left;
+        font-size: 0.8em;
+    }
+
+    .centered {
+        text-align: center;
     }
 </style>
 {% endblock %}
 
 {% block content %}
-    <strong class="record_date" style="position: absolute; font-size: 14px; left: 160mm; top: 43mm;">
-        {{ obj.formatted_voucher_date }}
-    </strong>
+<div class="margin">
+{% if obj.cancelled %}
+<p id="cancelled">C A N C E L L E D</p>
+{% endif %}
 
-    <strong class="receiving_report_number" style="position: absolute; font-size: 14px; left: 160mm; top: 37mm;">
-        {{ obj.receiving_report_number }}
-    </strong>
+{% if g.company_name %}
+<h1 class="centered">{{ g.company_name }}</h1>
+{% else %}
+<h1 class="centered">Company Name</h1>
+{% endif %}
+<h2 class="centered">RECEIVING REPORT</h2>
 
-    <strong class="vendor" style="position: absolute; font-size: 18px; left: 20mm; top: 37mm;">
-        Supplier: {{ obj.vendor }}
-    </strong>
-
-    <strong class="supporting_documents" style="position: absolute; font-size: 14px; left: 20mm; top: 43mm;">
-        Inv No. : {{ obj.supporting_documents }}
-    </strong>
-
-<div class="articles" style="position: absolute; font-size: 14px; left: 20mm; top: 65mm;">
-    {% for row in obj.receiving_report_details %}
-        <div>
-            <strong class="purchase_order_number" style="width: 30mm; display: inline-block;">PO#{{ row.purchase_order_number }}</strong>
-            <strong class="raw_material" style="width: 100mm; display: inline-block;">{{ row.raw_material }}</strong>
-            <strong class="quantity" style="width: 40mm; display: inline-block; text-align: center;">{{ row.formatted_quantity }} {{ row.measure }}</strong>
+<div class="row">
+    <div class="col-6">
+        <div class="row">
+            <label class="col-6">Date</label>
+            <span class="col-6 information">{{ obj.formatted_record_date }}</span>
         </div>
-    {% endfor %}
+    </div>
+    <div class="col-6" style="text-align: right;">
+        <span>
+            <label>RR No.</label>
+            <span style="color:red;"><strong>{{ obj.receiving_report_number }}</strong></span>
+        </span>
+        
+    </div>
 </div>
 
-    <strong class="received_by" style="position: absolute; font-size: 14px; left: 120mm; top: 157mm;">
-        {{ obj.received_by }}
-    </strong>
+<div class="row">
+            <label class="col-3">Vendor</label>
+            <span class="col-8 information">{{ obj.vendor.vendor_name }}</span>
+</div>
 
-    <strong class="checked_by" style="position: absolute; font-size: 14px; left: 35mm; top: 157mm;">
-        {{ obj.checked_by }}
-    </strong>
+<div class="row">
+            <label class="col-3">Supporting Documents</label>
+            <span class="col-8 information">{{ obj.supporting_documents }}</span>
+</div>
 
+<table class="table">
+    <thead>
+        <tr>
+            <th class="centered">PO No.</th>
+            <th class="centered">Quantity</th>
+            <th class="centered">Measure</th>
+            <th class="centered">Description</th>
+            <th class="centered">Remarks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in range(10) %}
+        <tr>
+            {% if obj.receiving_report_details[i] is defined %}
+                <td class="centered">{{ obj.receiving_report_details[i].purchase_order_number }}</td>
+                <td class="centered">{{ obj.receiving_report_details[i].formatted_quantity }}</td>
+                <td class="centered">{{ obj.receiving_report_details[i].measure.measure_name }}</td>
+                <td>{{ obj.receiving_report_details[i].raw_material.raw_material_name }}</td>
+                <td>{{ obj.receiving_report_details[i].notes }}</td>
+            {% else %}
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>    
+
+<div class="row">
+    <div class="col-4 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="prepared_by" class="signatory_label">Prepared by:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="prepared_by">{{ obj.prepared_by }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-4 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="prepared_by" class="signatory_label">Checked by:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="checked_by">{{ obj.checked_by }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="received_by" class="signatory_label">Received by:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="received_by">{{ obj.received_by }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
 {% endblock %}

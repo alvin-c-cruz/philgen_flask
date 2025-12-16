@@ -87,7 +87,8 @@ def add():
                 form_detail.purchase_order_number = detail.purchase_order.purchase_order_number    
                 form_detail.quantity = detail.pending()     
                 form_detail.measure_id = detail.measure.id    
-                form_detail.raw_material_name = detail.raw_material.raw_material_name   
+                form_detail.raw_material_name = detail.raw_material.raw_material_name  
+                form_detail.notes = detail.side_note 
                 
                 i += 1 
                     

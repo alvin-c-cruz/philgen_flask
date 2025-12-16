@@ -66,6 +66,8 @@ class ReceivingReportDetail(db.Model):
     raw_material_id = db.Column(db.Integer, db.ForeignKey('raw_material.id'), nullable=False)
     raw_material = db.relationship('RawMaterial', backref='receiving_report_details', lazy=True)
 
+    notes = db.Column(db.String())
+
     @property
     def formatted_quantity(self):
         # Convert to string with enough precision to catch all decimals
