@@ -217,7 +217,7 @@
                         {% if form_detail.id %}
                         <input type="text" name="receiving_report_id-{{ i }}" value="{{ form_detail.receiving_report_id }}" hidden>
                         {% endif %}
-                        <input type="number" name="purchase_order_number-{{ i }}" step="any" value="{{ form_detail.purchase_order_number }}" class="form-control currency" {% if form.locked_ %}readonly{% endif %}>
+                        <input type="number" name="purchase_order_number-{{ i }}" step="any" value="{{ form_detail.purchase_order_number }}" class="form-control currency" readonly>
                         {% if form_detail.errors.get('purchase_order_number') %}
                         <p class="text-danger">{{ form_detail.errors.get('purchase_order_number') }}</p>
                         {% endif %}
