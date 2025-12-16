@@ -69,7 +69,8 @@ def pending():
         purchase_orders = (
             PurchaseOrder.query
             .filter(
-                PurchaseOrder.vendor.has(vendor_name=vendor_name)
+                PurchaseOrder.vendor.has(vendor_name=vendor_name),
+                (PurchaseOrder.done == False) | (PurchaseOrder.done.is_(None))
                 )
             .order_by(PurchaseOrder.purchase_order_number.desc())
             .all()
