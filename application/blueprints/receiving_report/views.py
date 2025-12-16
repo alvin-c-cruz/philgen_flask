@@ -128,11 +128,25 @@ def edit(record_id):
             cmd_button = request.form.get("cmd_button")
             if cmd_button == "Submit for Printing":
                 form.submit()
-
+                
             form.user_prepare_id = current_user.id
             form.save()
 
             if cmd_button == "Submit for Printing":
+                # Update the status of related Purchase Orders
+                po_numbers = set([i.purchase_order_number for _, i in form.details])
+                from .. purchase_order import PurchaseOrder
+                
+                for po_number in po_numbers:
+                    purchase_order = PurchaseOrder.query.filter_by(purchase_order_number=po_number).first()
+                    if purchase_order:
+                        done = True
+                        for detail in purchase_order.purchase_order_details:
+                            if detail.pending():
+                                done = False
+                        purchase_order.done = done
+                        db.session.commit()
+
                 flash(f"{form.receiving_report_number} has been submitted for printing.", category="success")
                 return redirect(url_for(f'{app_name}.edit', record_id=form.id))
             elif cmd_button == "Save Draft":
@@ -193,6 +207,14 @@ def delete(record_id):
     details = ReceivingReportDetail.query.filter(ReceivingReportDetail.receiving_report_id==record_id).all()
     preparer = obj.preparer
 
+    # Update the status of related Purchase Orders
+    po_numbers = set([i.purchase_order_number for i in details])
+    from .. purchase_order import PurchaseOrder
+                
+    for po_number in po_numbers:
+        purchase_order = PurchaseOrder.query.filter_by(purchase_order_number=po_number).first()
+        purchase_order.done = False
+
     try:
         db.session.delete(preparer)
         for detail in details:
@@ -213,6 +235,16 @@ def delete(record_id):
 def cancel(record_id):   
     record = ReceivingReport.query.get_or_404(record_id)
     record.cancelled = str(datetime.datetime.today())[:10]
+    
+    # Update the status of related Purchase Orders
+    po_numbers = set([i.purchase_order_number for i in record.receiving_report_details])
+    from .. purchase_order import PurchaseOrder
+                
+    for po_number in po_numbers:
+        purchase_order = PurchaseOrder.query.filter_by(purchase_order_number=po_number).first()
+        purchase_order.done = False
+
+    
     db.session.commit()
     flash(f"{record.receiving_report_number} has been cancelled.", category="success")
 
@@ -243,6 +275,15 @@ def unlock(record_id):
     obj = ReceivingReport.query.get_or_404(record_id)
     obj.submitted = ""
     obj.cancelled = ""
+
+    # Update the status of related Purchase Orders
+    po_numbers = set([i.purchase_order_number for i in obj.receiving_report_details])
+    from .. purchase_order import PurchaseOrder
+                
+    for po_number in po_numbers:
+        purchase_order = PurchaseOrder.query.filter_by(purchase_order_number=po_number).first()
+        purchase_order.done = False
+
 
     db.session.commit()
     flash(f"{getattr(obj, f'{app_name}_number')} has been unlocked.", category="success")

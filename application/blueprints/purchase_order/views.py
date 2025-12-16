@@ -49,7 +49,9 @@ def home():
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def pending():
-    purchase_orders = PurchaseOrder.query.order_by(
+    purchase_orders = PurchaseOrder.query.filter(
+        (PurchaseOrder.done == False) | (PurchaseOrder.done.is_(None))
+        ).order_by(
         PurchaseOrder.purchase_order_number.desc()
         ).all()
        

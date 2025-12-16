@@ -30,6 +30,8 @@ class PurchaseOrder(db.Model):
     
     currency = db.Column(db.String(), default="PHP")
     terms = db.Column(db.String())
+    
+    done = db.Column(db.Boolean())
 
     @property
     def preparer(self):
