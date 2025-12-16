@@ -2,6 +2,8 @@ from application.extensions import db, short_date, long_date
 import datetime
 from collections import defaultdict
 
+from sqlalchemy import or_, and_
+
 
 class PurchaseOrder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -164,14 +166,29 @@ class PurchaseOrderDetail(db.Model):
         return '{:,.2f}'.format(self.quantity * self.unit_price)
     
     def pending(self):
-        from .. receiving_report import ReceivingReportDetail
+        from .. receiving_report import ReceivingReport, ReceivingReportDetail
         
         _pending = self.quantity
         
         rr_details = ReceivingReportDetail.query.filter(
-            ReceivingReportDetail.purchase_order_number==self.purchase_order.purchase_order_number,
-            ReceivingReportDetail.measure==self.measure,
-            ReceivingReportDetail.raw_material==self.raw_material,
+            ReceivingReportDetail.purchase_order_number == self.purchase_order.purchase_order_number,
+            ReceivingReportDetail.measure == self.measure,
+            ReceivingReportDetail.raw_material == self.raw_material,
+            ReceivingReportDetail.receiving_report.has(
+                and_(
+                    # submitted MUST be truthy
+                    ReceivingReport.submitted.isnot(None),
+                    ReceivingReport.submitted != '',
+                    ReceivingReport.submitted != False,
+
+                    # cancelled MUST be falsy
+                    or_(
+                        ReceivingReport.cancelled.is_(None),
+                        ReceivingReport.cancelled == '',
+                        ReceivingReport.cancelled == False
+                    )
+                )
+            )
         ).all()
         
         for rr_detail in rr_details:
