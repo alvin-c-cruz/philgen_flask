@@ -104,7 +104,7 @@ class PurchaseOrder(db.Model):
         for detail in self.purchase_order_details:
             requests.append(detail.purchase_request_number)
             
-        return ', '.join(sorted(set(requests)))
+        return ', '.join(sorted(set(requests)))     
     
 
 class PurchaseOrderDetail(db.Model):
@@ -162,6 +162,22 @@ class PurchaseOrderDetail(db.Model):
     @property
     def formatted_amount(self):
         return '{:,.2f}'.format(self.quantity * self.unit_price)
+    
+    def pending(self):
+        from .. receiving_report import ReceivingReportDetail
+        
+        _pending = self.quantity
+        
+        rr_details = ReceivingReportDetail.query.filter(
+            ReceivingReportDetail.purchase_order_number==self.purchase_order.purchase_order_number,
+            ReceivingReportDetail.measure==self.measure,
+            ReceivingReportDetail.raw_material==self.raw_material,
+        ).all()
+        
+        for rr_detail in rr_details:
+            _pending -= rr_detail.quantity
+         
+        return _pending
     
     
 class UserPurchaseOrder(db.Model):

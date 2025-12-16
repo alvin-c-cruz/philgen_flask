@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Pending Purchase Order{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-danger">Pending Purchase Order</h1>
+    <a href="{{ url_for('purchase_order.add') }}" class="btn btn-success mb-3">Add Purchase Order</a>
+
+    <form method="post" action="{{ url_for('purchase_order.pending') }}">
+        <div class="row mb-3">
+            <div class="col-2">
+                <label for="vendor_name">Vendor Name</label>
+            </div>
+            <div class="col-9">
+                <select name="vendor_name" class="form-select" onchange="this.form.submit()" autofocus>
+                        <option value=""></option>
+                        {% for option in vendor_options %}
+                            {% if option == vendor_name %}
+                        <option value="{{ option }}" selected>{{ option }}</option>
+                            {% else %}
+                        <option value="{{ option }}">{{ option }}</option>
+                            {% endif %}       
+                        {% endfor %}
+                </select>
+                {% if vendor_name_error %}
+                <p class="text-danger">{{ vendor_name_error }}</p>
+                {% endif %} 
+            </div>
+            <div class="col-1">
+                {% if vendor_name %}
+                <input type="submit" name="cmd_button" value="Create RR" class="btn btn-success">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>PO No.</th>
+                                <th>Vendor</th>
+                                <th>Items</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for purchase_order in purchase_orders %}
+                            <tr>
+                                <td>{{ purchase_order.formatted_record_date }}</td>
+                                <td>{{ purchase_order.purchase_order_number }}</td>
+                                <td>{{ purchase_order.vendor.vendor_name }}</td>
+                                <td>
+                                    <table class="table table-hover">
+                                        <tr>
+                                            <th>PR</th>
+                                            <th>Qty</th>
+                                            <th>Description</th>
+                                            <th>Unit Price</th>
+                                            <th>Amount</th>
+                                            {% if vendor_name %}
+                                            <th>Select</th>
+                                            {% endif %}
+                                        </tr>
+                                        {% for detail in purchase_order.purchase_order_details %}
+                                            {% if detail.pending() %}
+                                        <tr>
+                                            <td>{{ detail.purchase_request_number }}</td>
+                                            <td>{{ detail.pending() }} {{ detail.measure.measure_name }}</td>
+                                            <td>{{ detail.raw_material.raw_material_name }}</td>
+                                            <td>{{ detail.formatted_unit_price }}</td>
+                                            <td>{{ detail.formatted_amount }}</td>
+                                            {% if vendor_name %}
+                                            <td><input type="checkbox" name="detail_ids" value="{{ detail.id }}"></td>
+                                            {% endif %}
+                                        </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </table>
+                                </td>
+                                <td>
+                                    {% if purchase_order.submitted or purchase_order.cancelled %}
+                                        <a href="{{ url_for('purchase_order.view', record_id=purchase_order.id) }}"
+                                        class="btn btn-warning btn-sm">View</a>
+                                    {% else %}
+                                        <a href="{{ url_for('purchase_order.edit', record_id=purchase_order.id) }}"
+                                        class="btn btn-warning btn-sm">Edit</a>
+                                        {% if current_user.admin %}
+                                        <a href="{{ url_for('purchase_order.delete', record_id=purchase_order.id) }}"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirmMessage('Type YES to delete this record.')">Delete</a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if purchase_orders|length == 0 %}
+                            <tr>
+                                <td colspan="4" class="text-center">No records found.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

@@ -7,9 +7,11 @@ from .forms import Form
 from .. raw_material import RawMaterial
 from .. measure import Measure
 from .. vendor import Vendor
-from application.extensions import db, month_first_day, month_last_day, next_control_number
+from application.extensions import db, year_first_day, month_last_day, next_control_number
 from .. user import login_required, roles_accepted
 from . import app_name, app_label
+
+from .. purchase_order import PurchaseOrderDetail
 
 
 bp = Blueprint(app_name, __name__, template_folder="pages", url_prefix=f"/{app_name}")
@@ -24,7 +26,7 @@ def home():
         date_from = request.form.get("date_from")
         date_to = request.form.get("date_to")
     else:
-        date_from = month_first_day()
+        date_from = year_first_day()
         date_to = month_last_day()
 
     rows = ReceivingReport.query.filter(
@@ -68,8 +70,35 @@ def add():
             control_number_field="receiving_report_number", 
             record_date=today
             )
-        form.prepared_by = "JOSIE LO"
-        form.checked_by = "DENNIS GALANG"
+        
+        from_po = request.args.get('from_po')
+        if from_po:
+            from_po = eval(from_po)
+            vendor = Vendor.query.filter_by(vendor_name=from_po["vendor_name"]).first()
+            detail_ids = eval(str(from_po['detail_ids']))
+            
+            form.vendor_id = vendor.id
+            
+            i = 0
+            for detail_id in detail_ids:
+                detail = PurchaseOrderDetail.query.get(detail_id)
+                
+                _, form_detail = form.details[i]
+                form_detail.purchase_order_number = detail.purchase_order.purchase_order_number    
+                form_detail.quantity = detail.quantity     
+                form_detail.measure_id = detail.measure.id    
+                form_detail.raw_material_name = detail.raw_material.raw_material_name   
+                
+                i += 1 
+                    
+            
+        last_entry = ReceivingReport.query.order_by(ReceivingReport.id.desc()).first()
+
+        if last_entry:
+            form.prepared_by = last_entry.prepared_by
+            form.received_by = last_entry.received_by
+            form.checked_by = last_entry.checked_by
+
 
     context = {
         "form": form,

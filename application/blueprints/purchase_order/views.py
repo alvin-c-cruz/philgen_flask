@@ -9,7 +9,7 @@ from .forms import Form
 from .. raw_material import RawMaterial
 from .. measure import Measure
 from .. vendor import Vendor
-from application.extensions import db, month_first_day, month_last_day, next_control_number
+from application.extensions import db, year_first_day, month_last_day, next_control_number
 from .. user import login_required, roles_accepted
 from . import app_name, app_label
 
@@ -26,12 +26,13 @@ def home():
         date_from = request.form.get("date_from")
         date_to = request.form.get("date_to")
     else:
-        date_from = month_first_day()
+        date_from = year_first_day()
         date_to = month_last_day()
 
     purchase_orders = PurchaseOrder.query.filter(
-        PurchaseOrder.record_date.between(date_from, date_to)).order_by(
-        PurchaseOrder.record_date.desc(), PurchaseOrder.id.desc()
+        PurchaseOrder.record_date.between(date_from, date_to)
+        ).order_by(
+        PurchaseOrder.purchase_order_number.desc()
         ).all()
         
 
@@ -42,6 +43,67 @@ def home():
     }
 
     return render_template(f"{app_name}/home.html", **context)
+
+
+@bp.route("/pending", methods=["POST", "GET"])
+@login_required
+@roles_accepted([ROLES_ACCEPTED])
+def pending():
+    purchase_orders = PurchaseOrder.query.order_by(
+        PurchaseOrder.purchase_order_number.desc()
+        ).all()
+       
+    vendor_options = sorted(
+        {po.vendor.vendor_name for po in purchase_orders}
+    )
+    
+    vendor_name = ""
+    vendor_name_error = ""
+    detail_ids = ''
+    
+    if request.method == "POST":
+        vendor_name = request.form.get('vendor_name')
+
+        purchase_orders = (
+            PurchaseOrder.query
+            .filter(
+                PurchaseOrder.vendor.has(vendor_name=vendor_name)
+                )
+            .order_by(PurchaseOrder.purchase_order_number.desc())
+            .all()
+        )    
+
+        if request.form.get('cmd_button') == "Create RR":
+            detail_ids = request.form.getlist('detail_ids')
+            detail_ids = list(map(int, detail_ids))
+            detail_ids = [int(x) for x in detail_ids]
+            
+            if detail_ids:
+                count = len(detail_ids)
+                if count > 10:
+                    vendor_name_error = "Selected items cannot be more than 10."
+                else:
+                    from_po = {
+                        "vendor_name": vendor_name,
+                        "detail_ids": detail_ids
+                    }
+                    return redirect(url_for(f'receiving_report.add', from_po=from_po))
+            else:
+                vendor_name_error = "Please select an item to receive."
+
+    else:
+        purchase_orders = []
+   
+    
+    context = {
+        "purchase_orders": purchase_orders,
+        "vendor_options": vendor_options,
+        "vendor_name": vendor_name,
+        "vendor_name_error": vendor_name_error,
+        "detail_ids": detail_ids
+    }
+
+    return render_template(f"{app_name}/pending.html", **context)
 
 
 @bp.route("/add", methods=["POST", "GET"])
