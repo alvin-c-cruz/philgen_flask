@@ -2,7 +2,6 @@ from application.extensions import db, short_date
 import datetime
 from sqlalchemy.orm import joinedload
 from .. purchase_order import PurchaseOrder, PurchaseOrderDetail
-from .. purchase_order_extra import PurchaseOrderExtra, PurchaseOrderExtraDetail
 
 
 class PurchaseRequest(db.Model):
@@ -54,27 +53,12 @@ class PurchaseRequest(db.Model):
             .all()
             )
 
-        purchase_orders_extra = (
-            db.session.query(PurchaseOrderExtra)
-            .join(PurchaseOrderExtraDetail)
-            .filter(PurchaseOrderExtraDetail.purchase_request_number == self.purchase_request_number,
-                    PurchaseOrderExtra.cancelled.is_(None),
-                    )
-            .options(joinedload(PurchaseOrderExtra.purchase_order_extra_details))
-            .all()
-            )
 
         # Match Purchase Request versus Purchase Order
         purchase_requests = self.purchase_request_details.copy()
         
         for order in purchase_orders:
             for detail in order.purchase_order_details:
-                for request in purchase_requests:
-                    if request.raw_material == detail.raw_material:
-                        request.quantity -= detail.quantity
-                        
-        for order in purchase_orders_extra:
-            for detail in order.purchase_order_extra_details:
                 for request in purchase_requests:
                     if request.raw_material == detail.raw_material:
                         request.quantity -= detail.quantity

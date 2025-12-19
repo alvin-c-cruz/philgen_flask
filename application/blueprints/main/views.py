@@ -2,7 +2,6 @@ from flask import Blueprint, render_template, current_app, g
 from .. user import login_required
 from .. customer import Customer
 from .. measure import Measure
-from .. plastic_label import PlasticLabel
 from .. vendor import Vendor
 from .. department import Department
 
@@ -17,7 +16,6 @@ def home():
     modules = {
         "customers": Customer,
         "measures": Measure,
-        "plastic_labels": PlasticLabel,
         "vendors": Vendor,
         "departments": Department 
     }
