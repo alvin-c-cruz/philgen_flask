@@ -1,0 +1,23 @@
+
+
+            <!-- Receiving Report Menu -->
+            {% if ("Receiving Report" in current_user.user_roles) 
+            or ("Receiving Report" in current_user.user_roles) 
+            %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Receiving Report
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                {% if "Receiving Report" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('receiving_report.home') }}">Receiving Report List</a></li>
+                {% endif %}
+                <li><hr class="dropdown-divider"></li>
+                {% if "Receiving Report" in current_user.user_roles %}    
+                <li><a class="dropdown-item" href="{{ url_for('purchase_order.pending') }}">Pending Purchase Order</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('receiving_report.add') }}">Create Receiving Report</a></li>
+                {% endif %}
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Receiving Report Menu -->
