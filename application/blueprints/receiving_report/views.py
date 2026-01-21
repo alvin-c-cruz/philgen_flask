@@ -214,7 +214,7 @@ def delete(record_id):
                 
     for po_number in po_numbers:
         purchase_order = PurchaseOrder.query.filter_by(purchase_order_number=po_number).first()
-        purchase_order.done = False
+        if purchase_order: purchase_order.done = False
 
     try:
         db.session.delete(preparer)

@@ -9,7 +9,6 @@
 
           {% if current_user.is_active %}
 
-          {% include 'sales_order/navbar.html' %}
 
           <!-- Sales Menu -->
             {% 
@@ -25,9 +24,6 @@
                 {% if "Product" in current_user.user_roles %}    
                 <li><a class="dropdown-item" href="{{ url_for('product.home') }}">Product List</a></li>
                 <li><hr class="dropdown-divider"></li>
-                {% endif %}
-                {% if "Sales Order" in current_user.user_roles %}    
-                <li><a class="dropdown-item" href="{{ url_for('sales_order.home') }}">Job Order</a></li>
                 {% endif %}
                 {% if "Delivery Receipt" in current_user.user_roles %}    
                 <li><a class="dropdown-item" href="{{ url_for('delivery_receipt.home') }}">Delivery Receipt w/ Invoice</a></li>
