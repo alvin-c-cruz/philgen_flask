@@ -31,7 +31,7 @@ def home():
 
     rows = ReceivingReport.query.filter(
         ReceivingReport.record_date.between(date_from, date_to)).order_by(
-        ReceivingReport.record_date.desc(), ReceivingReport.id.desc()
+        ReceivingReport.receiving_report_number.desc()
         ).all()
         
 

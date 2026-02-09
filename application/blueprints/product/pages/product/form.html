@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% from 'macros_form_header.html' import currency_box%}
+{% from "macros_simple_form.html" import text_box, text_area, save_button %}
 
 {% block title %}Product{% endblock %}
 
@@ -14,53 +15,11 @@
     <form action="{{ url_for('product.add') }}" method="post">
         {% endif %}
     
-        <div class="row mb-3">
-            <label for="inhouse_name" class="col-sm-2 col-form-label">Inhouse Name</label>
-            <div class="col-sm-10">
-                <input type="text" name="inhouse_name" value="{{ form.inhouse_name }}" class="form-control" autofocus>
-                {% if form.errors.get('inhouse_name') %}
-                <p style="color: red;">{{ form.errors.get('inhouse_name') }}</p>
-                {% endif %}
-            </div>
-        </div>
-    
-        <div class="row mb-3">
-            <label for="product_name" class="col-sm-2 col-form-label">Product Name</label>
-            <div class="col-sm-10">
-                <input type="text" name="product_name" value="{{ form.product_name }}" class="form-control">
-                {% if form.errors.get('product_name') %}
-                <p style="color: red;">{{ form.errors.get('product_name') }}</p>
-                {% endif %}
-            </div>
-        </div>
-    
-        <div class="row mb-3">
-            <label for="product_code" class="col-sm-2 col-form-label">Product Code</label>
-            <div class="col-sm-10">
-                <input type="text" name="product_code" value="{{ form.product_code }}" class="form-control">
-                {% if form.errors.get('product_code') %}
-                <p style="color: red;">{{ form.errors.get('product_code') }}</p>
-                {% endif %}
-            </div>
-        </div>
-    
-        <div class="row mb-3">
-            <label for="customer_code" class="col-sm-2 col-form-label">Customer Code</label>
-            <div class="col-sm-10">
-                <input type="text" name="customer_code" value="{{ form.customer_code }}" class="form-control">
-                {% if form.errors.get('custome_code') %}
-                <p style="color: red;">{{ form.errors.get('customer_code') }}</p>
-                {% endif %}
-            </div>
-        </div>
-
+        {{ text_box(form, "Product Name", "product_name", form.product_name, autofocus=True) }}
+        {{ text_box(form, "Product Code", "product_code", form.product_code) }}
+        {{ text_box(form, "Customer Code", "customer_code", form.customer_code) }}
         {{ currency_box(form, "Price", "default_price", form.default_price) }}
-
-        <div class="row">
-            <div class="col-sm-10 offset-sm-2">
-                <input type="submit" value="Save" class="btn btn-primary">
-            </div>
-        </div>
+        {{  save_button() }}
 
     </form>
 </div>

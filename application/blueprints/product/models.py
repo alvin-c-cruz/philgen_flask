@@ -3,7 +3,6 @@ from application.extensions import db
 
 class Product(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
-    inhouse_name = db.Column(db.String(255))
     product_name = db.Column(db.String(255))
     product_code = db.Column(db.String(255))
     customer_code = db.Column(db.String(255))
