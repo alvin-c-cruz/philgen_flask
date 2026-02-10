@@ -51,6 +51,13 @@
                 <strong class="unit_price" style="width: 20mm; display: inline-block; text-align: center;">{{ row.formatted_unit_price }}</strong>
                 <strong class="amount" style="width: 20mm; display: inline-block; text-align: right;">{{ row.formatted_amount }}&nbsp;</strong>
             </div>
+            {% if row.raw_material_description %}
+            <div style="margin-left: 6px;">
+                <strong style="margin-left: 25mm;">
+                    {{ row.raw_material_description }}
+                </strong>
+            </div>
+            {% endif %}
         {% endfor %}
     {% endfor %}
             <div style="margin-left: 10px; margin-top: 10px;">
@@ -81,7 +88,7 @@
             {% if obj.discount or obj.add_vat %}
                 {% if obj.discount %}
             <div style="margin-left: 10px; margin-top: 10px;">
-                <strong class="discount_remark" style="width: 132mm; display: inline-block; text-align: right;">Less Discount : {{ obj.discount_note }}</strong>
+                <strong class="discount_remark" style="width: 153mm; display: inline-block; text-align: right;">Less Discount : {{ obj.discount_note }}</strong>
                 <strong class="discount" 
                         style="width: 28mm; 
                             display: inline-block; 
@@ -93,7 +100,7 @@
                 {% endif %}
                 {% if obj.discount and obj.add_vat %}
             <div style="margin-left: 10px; margin-top: 10px;">
-                <strong class="nothing_follows" style="width: 134mm; display: inline-block; text-align: center;"></strong>
+                <strong class="nothing_follows" style="width: 132mm; display: inline-block; text-align: center;"></strong>
                 <strong class="currency" style="width: 20mm; display: inline-block; text-align: right;">{{ obj.currency }}</strong>
                 <strong class="discount" 
                         style="width: 28mm; 
@@ -107,7 +114,7 @@
                 {% endif %}
                 {% if obj.add_vat %}
             <div style="margin-left: 10px; margin-top: 10px;">
-                <strong  style="width: 154mm; display: inline-block; text-align: right;">Add : VAT</strong>
+                <strong  style="width: 153mm; display: inline-block; text-align: right;">Add : VAT</strong>
                 <strong class="discount" 
                         style="width: 28mm; 
                             display: inline-block; 
@@ -118,7 +125,7 @@
             </div>
                 {% endif %}
             <div style="margin-left: 10px; margin-top: 10px;">
-                <strong class="nothing_follows" style="width: 134mm; display: inline-block; text-align: center;"></strong>
+                <strong class="nothing_follows" style="width: 132mm; display: inline-block; text-align: center;"></strong>
                 <strong class="currency" style="width: 20mm; display: inline-block; text-align: right;">{{ obj.currency }}</strong>
                 <strong class="discount" 
                         style="width: 28mm; 

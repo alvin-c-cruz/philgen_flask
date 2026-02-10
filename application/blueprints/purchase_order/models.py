@@ -126,6 +126,8 @@ class PurchaseOrderDetail(db.Model):
 
     raw_material_id = db.Column(db.Integer, db.ForeignKey('raw_material.id'), nullable=False)
     raw_material = db.relationship('RawMaterial', backref='purchase_order_details', lazy=True)
+    
+    raw_material_description = db.Column(db.String())
 
     unit_price = db.Column(db.Float, default=0)
 

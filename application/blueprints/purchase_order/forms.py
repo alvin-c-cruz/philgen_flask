@@ -20,6 +20,7 @@ class SubForm:
     quantity: float = 0
     measure_id: int = 0
     raw_material_id: int = 0
+    raw_material_description: str = ""
     unit_price: float = 0
     side_note: str = ""
     
@@ -37,6 +38,7 @@ class SubForm:
         self.measure_name = row.measure.measure_name
         self.raw_material_id = row.raw_material_id
         self.raw_material_name = row.raw_material.raw_material_name
+        self.raw_material_description = row.raw_material_description if row.raw_material_description else ""
         self.unit_price = row.unit_price
         self.side_note = row.side_note 
 
@@ -77,6 +79,7 @@ class SubForm:
             self.measure_name,
             self.raw_material_id, 
             self.raw_material_name,
+            self.raw_material_description,
             self.unit_price, 
             self.side_note
             ])    
@@ -146,6 +149,7 @@ class Form:
                         quantity=detail.quantity,
                         measure_id=detail.measure_id,
                         raw_material_id=detail.raw_material_id,
+                        raw_material_description=detail.raw_material_description,
                         unit_price=detail.unit_price,
                         side_note=detail.side_note                    
                     )
@@ -194,6 +198,7 @@ class Form:
                             quantity=detail.quantity,
                             measure_id=detail.measure_id,
                             raw_material_id=detail.raw_material_id,
+                            raw_material_description=detail.raw_material_description,
                             unit_price=detail.unit_price,
                             side_note=detail.side_note
                             )
@@ -241,17 +246,8 @@ class Form:
 
         self.discount_note = order_form.get('discount_note')
 
-        _discount = order_form.get('discount')
-        if not _discount.isnumeric():
-            self.discount = 0
-        else:
-            self.discount = float(_discount)
-
-        _add_vat = order_form.get('add_vat')
-        if not _add_vat.isnumeric():
-            self.add_vat = 0
-        else:
-            self.add_vat = float(_add_vat)
+        self.discount = order_form.get('discount')
+        self.add_vat = order_form.get('add_vat')
 
         self.order_note = order_form.get('order_note')
         self.prepared_by = order_form.get('prepared_by')
@@ -287,6 +283,8 @@ class Form:
             if raw_material:
                 self.details[i][1].raw_material_id = raw_material.id
                 
+            self.details[i][1].raw_material_description = order_form.get(f'raw_material_description-{i}')
+
             self.details[i][1].unit_price = float(order_form.get(f'unit_price-{i}'))
 
             self.details[i][1].side_note = order_form.get(f'side_note-{i}')
@@ -311,12 +309,6 @@ class Form:
             vendor = Vendor.query.filter(Vendor.vendor_name==self.vendor_name).first()
             if not vendor:
                 self.errors["vendor_name"] = "Vendor name does not exists."
-
-        if not str(self.discount).isnumeric():
-            self.discount = 0
-
-        if not str(self.add_vat).isnumeric():
-            self.add_vat = 0
 
         for i in range(DETAIL_ROWS):
             if not self.details[i][1].validate():

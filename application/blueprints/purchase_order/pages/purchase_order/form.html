@@ -15,12 +15,12 @@
 
     th:nth-child(1),
     td:nth-child(1) {
-        width: 10%; /* PR Number */
+        width: 5%; /* PR Number */
     }
 
     th:nth-child(2),
     td:nth-child(2) {
-        width: 10%; /* Quantity */
+        width: 5%; /* Quantity */
     }
 
     th:nth-child(3),
@@ -30,17 +30,27 @@
 
     th:nth-child(4),
     td:nth-child(4) {
-        width: 25%; /* Description */
+        width: 20%; /* Item */
     }
 
     th:nth-child(5),
     td:nth-child(5) {
-        width: 10%; /* Unit Price */
+        width: 25%; /* Description */
     }
 
     th:nth-child(6),
     td:nth-child(6) {
+        width: 10%; /* Unit Price */
+    }
+
+    th:nth-child(7),
+    td:nth-child(7) {
         width: 10%; /* Amount */
+    }
+
+    th:nth-child(8),
+    td:nth-child(8) {
+        width: 15%; /* Remarks */
     }
 
 
@@ -63,7 +73,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container p-5">
+<div class="container-fluid p-5">
     {% if form.id %}
         {% if form.submitted or form.cancelled %}
         <h1 class="mb-4"><span style="color:red;">Locked</span> Purchase Order</h1>
@@ -264,7 +274,7 @@
 
         <div class="col-4">
             <label for="discount" class="form-label">Discount Amount</label>
-            <input type="text" name="discount" value="{{ form.discount }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+            <input type="number" name="discount" value="{{ form.discount }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
             {% if form.errors.get('discount') %}
             <p class="text-danger">{{ form.errors.get('discount') }}</p>
             {% endif %}    
@@ -272,7 +282,7 @@
 
         <div class="col-4">
             <label for="add_vat" class="form-label">Add VAT</label>
-            <input type="text" name="add_vat" value="{{ form.add_vat }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+            <input type="number" name="add_vat" value="{{ form.add_vat }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
             {% if form.errors.get('add_vat') %}
             <p class="text-danger">{{ form.errors.get('add_vat') }}</p>
             {% endif %}    
@@ -285,6 +295,7 @@
                     <th>PR No.</th>
                     <th>Quantity</th>
                     <th>Measure</th>
+                    <th>Item</th>
                     <th>Description</th>
                     <th>Unit Price</th>
                     <th>Amount</th>
@@ -348,6 +359,29 @@
                                     url: '{{ url_for("raw_material._autocomplete") }}'
                                     }).done(function (data){
                                         $('#raw_material_name-{{ i }}').autocomplete({
+                                            source: data,
+                                            minLength: 2
+                                        });
+                                    });
+                                });
+                        </script>
+                    </td>
+                    <td>
+                        <input type="text" id="raw_material_description-{{ i }}" name="raw_material_description-{{ i }}" value="{{ form_detail.raw_material_description }}" 
+                        class="form-control upper-case ui-autocomplete-input" 
+                        {% if form.submitted %} readonly {% else %} autocomplete="off" {% endif %} 
+                        spellcheck="false" data-ms-editor="true">
+
+                        {% if form_detail.errors.get('raw_material_description') %}
+                        <p class="text-danger">{{ form_detail.errors.get('raw_material_description') }}</p>
+                        {% endif %}
+
+                        <script>
+                            $(function() {
+                                $.ajax({
+                                    url: '{{ url_for("purchase_order.raw_material_description_autocomplete") }}'
+                                    }).done(function (data){
+                                        $('#raw_material_description-{{ i }}').autocomplete({
                                             source: data,
                                             minLength: 2
                                         });

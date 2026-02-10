@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, Response
 from jinja2 import TemplateNotFound
+import json
 
 from flask_login import current_user
 import datetime
@@ -299,3 +300,8 @@ def unlock(record_id):
     return redirect(url_for(f'{app_name}.edit', record_id=record_id))
 
 
+@bp.route("/autocomplete", methods=['GET'])
+@login_required
+def raw_material_description_autocomplete():
+    options = list({row.raw_material_description for row in PurchaseOrderDetail.query.order_by(PurchaseOrderDetail.raw_material_description).all()})
+    return Response(json.dumps(options), mimetype='application/json')
