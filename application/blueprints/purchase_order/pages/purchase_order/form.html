@@ -274,7 +274,7 @@
 
         <div class="col-4">
             <label for="discount" class="form-label">Discount Amount</label>
-            <input type="number" name="discount" value="{{ form.discount }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+            <input type="number" name="discount" step="any" value="{{ form.discount }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
             {% if form.errors.get('discount') %}
             <p class="text-danger">{{ form.errors.get('discount') }}</p>
             {% endif %}    
@@ -282,7 +282,7 @@
 
         <div class="col-4">
             <label for="add_vat" class="form-label">Add VAT</label>
-            <input type="number" name="add_vat" value="{{ form.add_vat }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
+            <input type="number" name="add_vat" step="any" value="{{ form.add_vat }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
             {% if form.errors.get('add_vat') %}
             <p class="text-danger">{{ form.errors.get('add_vat') }}</p>
             {% endif %}    
