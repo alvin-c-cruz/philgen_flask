@@ -22,7 +22,7 @@
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 {% if "Product" in current_user.user_roles %}    
-                <li><a class="dropdown-item" href="{{ url_for('product.home') }}">Product List</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('product.home') }}">Order List</a></li>
                 <li><hr class="dropdown-divider"></li>
                 {% endif %}
                 {% if "Delivery Receipt" in current_user.user_roles %}    
@@ -156,10 +156,6 @@
 
             {% include "purchase_order/navbar.html" %}
             {% include "receiving_report/navbar.html" %}
-
-
-
-
 
             <!-- Issuance Menu -->
             {% if ("Issuance" in current_user.user_roles) 
