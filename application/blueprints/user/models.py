@@ -58,8 +58,24 @@ class User(db.Model):
 
 
 class UserRole(db.Model):
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), primary_key=True)
-    user = db.relationship('User', backref='roles', lazy=True)
-    
-    role_id = db.Column(db.Integer, db.ForeignKey('role.id'), primary_key=True)
-    role = db.relationship('Role', backref='users', lazy=True)
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('user.id', ondelete="CASCADE"),
+        primary_key=True
+    )
+    user = db.relationship(
+        'User',
+        backref=db.backref('roles', cascade="all, delete-orphan"),
+        lazy=True
+    )
+
+    role_id = db.Column(
+        db.Integer,
+        db.ForeignKey('role.id', ondelete="CASCADE"),
+        primary_key=True
+    )
+    role = db.relationship(
+        'Role',
+        backref=db.backref('users', cascade="all, delete-orphan"),
+        lazy=True
+    )

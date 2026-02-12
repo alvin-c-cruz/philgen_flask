@@ -275,18 +275,42 @@ def remove_role():
 
 def check_roles():
     from application import blueprints
+    from application.extensions import db
+    from .models import Role, UserRole
+
+    # Collect blueprint modules that contain "bp"
     modules = [
-        getattr(blueprints, module) 
-        for module in dir(blueprints) if hasattr(getattr(blueprints, module),"bp")
-        ]
-    role_names = ['user']
+        getattr(blueprints, module)
+        for module in dir(blueprints)
+        if hasattr(getattr(blueprints, module), "bp")
+    ]
+
+    # Build expected role names
+    expected_roles = {"user"}
+
     for module in modules:
-        if hasattr(module,"menu_label"):
-            role_names.append(getattr(module,"menu_label")[2])
-    
-    for role_name in role_names:
-        role = Role.query.filter_by(role_name=role_name).first()
-        if not role:
-            role = Role(role_name=role_name)
-            db.session.add(role)
-            db.session.commit()
+        if hasattr(module, "menu_label"):
+            expected_roles.add(module.menu_label[2])
+
+    # Get all existing roles from DB
+    existing_roles = Role.query.all()
+    existing_role_names = {role.role_name for role in existing_roles}
+
+    # 1️⃣ Add missing roles
+    roles_to_add = expected_roles - existing_role_names
+    for role_name in roles_to_add:
+        db.session.add(Role(role_name=role_name))
+
+    # 2️⃣ Delete roles whose blueprint no longer exists
+    roles_to_delete = existing_role_names - expected_roles
+
+    if roles_to_delete:
+        roles = Role.query.filter(Role.role_name.in_(roles_to_delete)).all()
+
+        for role in roles:
+            # Delete related UserRole entries first (safe even with cascade)
+            UserRole.query.filter_by(role_id=role.id).delete()
+            db.session.delete(role)
+
+    db.session.commit()
+

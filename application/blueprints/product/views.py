@@ -40,7 +40,8 @@ def add():
 
         if form.validate_on_submit():
             form.save()
-            return redirect(url_for(f'{app_name}.home'))
+            flash(f"{form.product_name} has been saved.")
+            return redirect(url_for(f'{app_name}.add'))
     else:
         form = Form()
 
