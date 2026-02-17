@@ -1,0 +1,204 @@
+{% extends "base_print.html" %}
+
+{% block title %}Printing JO No. {{ obj.job_order_number }}{% endblock %}
+
+{% block styles %}
+    {% if not (obj.submitted or obj.cancelled) %}
+    <style>
+        body {
+
+            color: red;
+            
+        }
+        @media print {
+        body {
+            display: none !important;
+        }
+    }
+    </style>
+    {% endif %}
+
+<style>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th {
+        font-size: 0.8em;
+    }
+
+    td {
+        font-size: 0.7em;
+        height: 30px; /* Adjust as needed */
+        border: 1px solid #ccc; /* Optional: For better visibility */
+    }
+</style>
+
+<style>
+    .margin {
+        margin: 10px;
+    }
+
+    .line-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .line {
+        width: 100%;
+        border-top: 1px solid black;
+        margin: 0;
+    }
+    
+    .text {
+        margin: 0;
+        padding: 0;
+        line-height: 1; /* Reduces the spacing */
+    }
+    
+</style>
+
+<style>
+    #cancelled {
+        position: absolute;
+        margin-top: 30%;
+        text-align: center;
+        width: 100%;
+        color: red;
+        font-size: 48px;
+        opacity: 0.5;
+    }
+
+    .signatory {
+        margin-top: 10px;
+    }
+
+    .signatory_name, .information{
+        border-bottom: 1px solid black; 
+    }
+
+    .signatory_name{
+        text-align: center;
+        font-size: 0.8em;
+    }
+
+    .signatory_label{
+        font-size: 0.7em;
+    }
+
+    .information{
+        text-align: left;
+        font-size: 0.8em;
+    }
+
+    .centered {
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="margin">
+{% if obj.cancelled %}
+<p id="cancelled">C A N C E L L E D</p>
+{% endif %}
+
+{% if g.company_name %}
+<h1 class="centered">{{ g.company_name }}</h1>
+{% else %}
+<h1 class="centered">Company Name</h1>
+{% endif %}
+<h2 class="centered">JOB ORDER</h2>
+
+<div class="row">
+    <div class="col-6">
+        <div class="row">
+            <label class="col-6">Date</label>
+            <span class="col-6 information">{{ obj.formatted_record_date }}</span>
+        </div>
+    </div>
+    <div class="col-6" style="text-align: right;">
+        <span>
+            <label>Job Order No.</label>
+            <span style="color:red;"><strong>{{ obj.job_order_number }}</strong></span>
+        </span>
+        
+    </div>
+</div>
+
+<div class="row">
+            <label class="col-3">Customer</label>
+            <span class="col-8 information">{{ obj.customer.customer_name }}</span>
+</div>
+
+<div class="row">
+            <label class="col-3">Customer Reference</label>
+            <span class="col-8 information">{{ obj.customer_reference_number }}</span>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th class="centered">Quantity</th>
+            <th class="centered">Measure</th>
+            <th class="centered">Description</th>
+            <th class="centered">Remarks</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for i in range(10) %}
+        <tr>
+            {% if obj.job_order_details[i] is defined %}
+                <td class="centered">{{ obj.job_order_details[i].formatted_quantity }}</td>
+                <td class="centered">{{ obj.job_order_details[i].measure.measure_name }}</td>
+                <td>{{ obj.job_order_details[i].product.product_name }}: {{ obj.job_order_details[i].product_description }}</td>
+                <td>{{ obj.job_order_details[i].notes }}</td>
+            {% else %}
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>    
+
+<div class="row">
+    <div class="col-4 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="prepared_by" class="signatory_label">Prepared:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="prepared_by">{{ obj.prepared_by }}</span>
+            </div>
+        </div>
+    </div>
+    <div class="col-4 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="prepared_by" class="signatory_label">Checked:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="checked_by">{{ obj.checked_by }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-4 signatory">
+        <div class="row">
+            <div class="col-4">
+                <label for="approved_by" class="signatory_label">Approved:</label>
+            </div>
+            <div class="col-6 signatory_name">
+                <span name="approved_by">{{ obj.approved_by }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+</div>
+{% endblock %}

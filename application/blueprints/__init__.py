@@ -13,6 +13,8 @@ from . import customer # Sales
 from . import sales_order_customer #For Sales Orders only
 from . import product # As seen in DR and Invoice
 
+from . import job_order
+
 from . import delivery_receipt
 from . import delivery_receipt_extra
 

@@ -32,8 +32,8 @@
 {% endmacro %}
 
 
-{% macro text_box(form, field_label, field_name, field_value, autofocus=False) %}
-<div class="col-6">
+{% macro text_box(form, field_label, field_name, field_value, autofocus=False, col=6) %}
+<div class="col-{{col}}">
     <label for="{{ field_name }}" class="form-label">{{ field_label }}</label>
     <input type="text" name="{{ field_name }}" value="{{ field_value }}" class="form-control upper-case" {% if autofocus %} autofocus {% endif %} {% if form.submitted %} readonly {% else %} autocomplete="off" {% endif %}>
     {% if form.errors.get(field_name) %}
@@ -43,8 +43,8 @@
 {% endmacro %}
 
 
-{% macro select_box(form, field_label, field_name, field_value, options, autofocus=False) %}
-<div class="col-6">
+{% macro select_box(form, field_label, field_name, field_value, options, autofocus=False, col=6) %}
+<div class="col-{{col}}">
     <label for="{{ field_name }}" class="form-label">{{ field_label }}</label>
     <select id="{{ field_name }}" name="{{ field_name }}" class="form-select" {% if autofocus %} autofocus {% endif %} {% if form.submitted %} disabled {% endif %}>
         <option value="0"></option>
@@ -63,8 +63,8 @@
 {% endmacro %}
 
 
-{% macro text_area(form, field_label, field_name, rows, field_value, autofocus=False) %}
-<div class="col-6">
+{% macro text_area(form, field_label, field_name, rows, field_value, autofocus=False, col=6) %}
+<div class="col-{{col}}">
     <label for="{{ field_name }}" class="form-label">{{ field_label }}</label>
     <textarea 
         name="{{  field_name  }}" 

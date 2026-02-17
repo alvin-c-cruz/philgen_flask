@@ -5,7 +5,7 @@ import json
 from flask_login import current_user
 import datetime
 from sqlalchemy.exc import IntegrityError
-from .models import PurchaseOrder, PurchaseOrderDetail
+from .models import PurchaseOrder, PurchaseOrderDetail, UserPurchaseOrder
 from .forms import Form
 from .. raw_material import RawMaterial
 from .. measure import Measure
@@ -51,6 +51,7 @@ def home():
 @roles_accepted([ROLES_ACCEPTED])
 def pending():
     purchase_orders = PurchaseOrder.query.filter(
+        PurchaseOrder.cancelled.is_(None),
         (PurchaseOrder.done == False) | (PurchaseOrder.done.is_(None))
         ).order_by(
         PurchaseOrder.purchase_order_number.desc()
@@ -70,6 +71,7 @@ def pending():
         purchase_orders = (
             PurchaseOrder.query
             .filter(
+                PurchaseOrder.cancelled.is_(None),
                 PurchaseOrder.vendor.has(vendor_name=vendor_name),
                 (PurchaseOrder.done == False) | (PurchaseOrder.done.is_(None))
                 )
@@ -138,7 +140,13 @@ def add():
             )
         form.currency = "PHP"
 
-        last_entry = PurchaseOrder.query.order_by(PurchaseOrder.id.desc()).first()
+        last_entry = (
+                        PurchaseOrder.query
+                        .join(UserPurchaseOrder)
+                        .filter(UserPurchaseOrder.user_id == current_user.id)
+                        .order_by(PurchaseOrder.id.desc())
+                        .first()
+                    )
 
         if last_entry:
             form.prepared_by = last_entry.prepared_by

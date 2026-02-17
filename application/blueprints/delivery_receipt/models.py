@@ -51,6 +51,8 @@ class DeliveryReceipt(db.Model):
 
 class DeliveryReceiptDetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    
+    job_order_number = db.Column(db.String())
 
     delivery_receipt_id = db.Column(db.Integer, db.ForeignKey('delivery_receipt.id'), nullable=False)
     delivery_receipt = db.relationship('DeliveryReceipt', backref='delivery_receipt_details', lazy=True)
@@ -63,7 +65,6 @@ class DeliveryReceiptDetail(db.Model):
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
     product = db.relationship('Product', backref='delivery_receipt_details', lazy=True)
 
-    so_number = db.Column(db.String())
     side_note = db.Column(db.String())
 
     @property

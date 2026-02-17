@@ -1,0 +1,16 @@
+            <!-- Job Order Menu -->
+            {% if "Job Order" in current_user.user_roles %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Job Order
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">  
+                <li><a class="dropdown-item" href="{{ url_for('job_order.add') }}">Create Job Order</a></li>
+                <li><hr class="dropdown-divider"></li>   
+                <li><a class="dropdown-item" href="{{ url_for('job_order.pending') }}">Running PO</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('job_order.home') }}">Job Order List</a></li>
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Job Order Menu -->
+

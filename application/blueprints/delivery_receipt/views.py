@@ -81,17 +81,7 @@ def home():
 @bp.route("/add", methods=["POST", "GET"])
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
-def add():
-    from .. sales_order import SalesOrder
-    from .. sales_order import SalesOrderDetail
-    
-    product_dropdown = [{"id": product.id, "product_name": product.product_name} for product in Product.query.order_by('product_name').all()]
-    measure_dropdown = [{"id": measure.id, "measure_name": measure.measure_name} for measure in Measure.query.order_by('measure_name').all()]
-    customer_dropdown = [{"id": customer.id, "dropdown_name": customer.customer_name} for customer in Customer.query.order_by('customer_name').all()]
-    so_numbers = [sales_order.sales_order_number for sales_order in SalesOrder.query.order_by('sales_order_number').all() if sales_order.is_submitted()]
-    
-    outstanding_orders = [order.remaining_order_dict() for order in SalesOrderDetail.query.all()]
-    
+def add():   
     if request.method == "POST":
         form = Form()
         form._post(request.form)
@@ -106,20 +96,19 @@ def add():
         form = Form()
         today = str(datetime.date.today())[:10]
         form.record_date = today
-        # form.delivery_receipt_number = next_control_number(
-        #     obj=Obj, 
-        #     control_number_field=f"{app_name}_number"
-        #     )
-        form.checked_by = "WARLITO FUENTES"
-        form.approved_by = "DENNIS M. GALANG"
+        form.delivery_receipt_number = next_control_number(
+            obj=Obj, 
+            control_number_field=f"{app_name}_number"
+            )
+        
+        last_entry = Obj.query.order_by(Obj.id.desc()).first()
+
+        if last_entry:
+            form.checked_by = last_entry.checked_by
+            form.approved_by = last_entry.approved_by
 
     context = {
         "form": form,
-        "product_dropdown": product_dropdown,
-        "measure_dropdown": measure_dropdown,
-        "customer_dropdown": customer_dropdown,
-        "so_numbers": so_numbers,
-        "outstanding_orders": outstanding_orders,
 
     }
 
@@ -129,13 +118,7 @@ def add():
 @bp.route("/edit/<int:record_id>", methods=["POST", "GET"])
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
-def edit(record_id):   
-    from .. sales_order import SalesOrder
-    product_dropdown = [{"id": product.id, "product_name": product.product_name} for product in Product.query.order_by('product_name').all()]
-    measure_dropdown = [{"id": measure.id, "measure_name": measure.measure_name} for measure in Measure.query.order_by('measure_name').all()]
-    customer_dropdown = [{"id": customer.id, "dropdown_name": customer.customer_name} for customer in Customer.query.order_by('customer_name').all()]
-    so_numbers = [sales_order.sales_order_number for sales_order in SalesOrder.query.order_by('sales_order_number').all() if sales_order.is_submitted()]
-    
+def edit(record_id):     
     record = Obj.query.get_or_404(record_id)
 
     if request.method == "POST":
@@ -163,10 +146,6 @@ def edit(record_id):
 
     context = {
         "form": form,
-        "product_dropdown": product_dropdown,
-        "measure_dropdown": measure_dropdown,
-        "customer_dropdown": customer_dropdown,      
-        "so_numbers": so_numbers,
     }
 
     return render_template(f"{app_name}/form.html", **context)
@@ -176,12 +155,6 @@ def edit(record_id):
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def view(record_id):   
-    from .. sales_order import SalesOrder
-    product_dropdown = [{"id": product.id, "product_name": product.product_name} for product in Product.query.order_by('product_name').all()]
-    measure_dropdown = [{"id": measure.id, "measure_name": measure.measure_name} for measure in Measure.query.order_by('measure_name').all()]
-    customer_dropdown = [{"id": customer.id, "dropdown_name": customer.customer_name} for customer in Customer.query.order_by('customer_name').all()]
-    so_numbers = [sales_order.sales_order_number for sales_order in SalesOrder.query.order_by('sales_order_number').all() if sales_order.is_submitted()]
-
     record = Obj.query.get_or_404(record_id)
 
     if request.method == "POST":
@@ -192,10 +165,6 @@ def view(record_id):
 
     context = {
         "form": form,
-        "product_dropdown": product_dropdown,
-        "measure_dropdown": measure_dropdown,
-        "customer_dropdown": customer_dropdown,
-        "so_numbers": so_numbers,
     }
 
     return render_template(f"{app_name}/form.html", **context)

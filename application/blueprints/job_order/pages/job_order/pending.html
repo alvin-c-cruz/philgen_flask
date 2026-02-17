@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Running PO{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-danger">Running Purchase Order</h1>
+    <a href="{{ url_for('job_order.add') }}" class="btn btn-success mb-3">Add Job Order</a>
+
+    <form method="post" action="{{ url_for('job_order.pending') }}">
+        <div class="row mb-3">
+            <div class="col-2">
+                <label for="customer_name">Customer Name</label>
+            </div>
+            <div class="col-8">
+                <select name="customer_name" class="form-select" onchange="this.form.submit()" autofocus>
+                        <option value=""></option>
+                        {% for option in customer_options %}
+                            {% if option == customer_name %}
+                        <option value="{{ option }}" selected>{{ option }}</option>
+                            {% else %}
+                        <option value="{{ option }}">{{ option }}</option>
+                            {% endif %}       
+                        {% endfor %}
+                </select>
+                {% if customer_name_error %}
+                <p class="text-danger">{{ customer_name_error }}</p>
+                {% endif %} 
+            </div>
+            <div class="col-1">
+                {% if customer_name %}
+                <input type="submit" name="cmd_button" value="Create DR" class="btn btn-success">
+                {% endif %}
+            </div>
+            <div class="col-1">
+                {% if customer_name %}
+                <input type="submit" name="cmd_button" value="Create ARD" class="btn btn-success">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>JO No.</th>
+                                <th>Customer</th>
+                                <th>Items</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                            <tr>
+                                <td>{{ row.formatted_record_date }}</td>
+                                <td>{{ row.job_order_number }}</td>
+                                <td>{{ row.customer.customer_name }}</td>
+                                <td>
+                                    <table class="table table-hover">
+                                        <tr>
+                                            <th>Qty</th>
+                                            <th>Product</th>
+                                            <th>Description</th>
+                                            <th>Remarks</th>
+                                            {% if vendor_name %}
+                                            <th>Select</th>
+                                            {% endif %}
+                                        </tr>
+                                        {% for detail in row.job_order_details %}
+                                            {% if detail.pending() %}
+                                        <tr>
+                                            <td>{{ detail.formatted_pending }} {{ detail.measure.measure_name }}</td>
+                                            <td>{{ detail.product.product_name }}</td>
+                                            <td>{{ detail.product_description }}</td>
+                                            <td>{{ detail.side_note }}</td>
+                                            {% if customer_name %}
+                                            <td><input type="checkbox" name="detail_ids" value="{{ detail.id }}"></td>
+                                            {% endif %}
+                                        </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </table>
+                                </td>
+                                <td>
+                                    {% if row.submitted or row.cancelled %}
+                                        <a href="{{ url_for('job_order.view', record_id=row.id) }}"
+                                        class="btn btn-warning btn-sm">View</a>
+                                    {% else %}
+                                        <a href="{{ url_for('job_order.edit', record_id=row.id) }}"
+                                        class="btn btn-warning btn-sm">Edit</a>
+                                        {% if current_user.admin %}
+                                        <a href="{{ url_for('job_order.delete', record_id=row.id) }}"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirmMessage('Type YES to delete this record.')">Delete</a>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            {% if rows|length == 0 %}
+                            <tr>
+                                <td colspan="5" class="text-center">No records found.</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+{% endblock %}

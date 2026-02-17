@@ -51,6 +51,8 @@ class DeliveryReceiptExtra(db.Model):
 
 class DeliveryReceiptExtraDetail(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    
+    job_order_number = db.Column(db.String())
 
     delivery_receipt_extra_id = db.Column(db.Integer, db.ForeignKey('delivery_receipt_extra.id'), nullable=False)
     delivery_receipt_extra = db.relationship('DeliveryReceiptExtra', backref='delivery_receipt_extra_details', lazy=True)

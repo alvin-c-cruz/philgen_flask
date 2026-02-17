@@ -1,0 +1,16 @@
+            <!-- Delivery Receipt Menu -->
+            {% if "Delivery Receipt" in current_user.user_roles %}
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Delivery Receipt
+              </a>
+              <ul class="dropdown-menu" aria-labelledby="navbarDropdown">  
+                <li><a class="dropdown-item" href="{{ url_for('delivery_receipt.add') }}">Create Delivery Receipt</a></li>
+                <li><hr class="dropdown-divider"></li>   
+                <li><a class="dropdown-item" href="#">DR for Billing</a></li>
+                <li><a class="dropdown-item" href="{{ url_for('delivery_receipt.home') }}">Delivery Receipt List</a></li>
+              </ul>
+            </li>
+            {% endif %}
+            <!-- End of Delivery Receipt Menu -->
+
