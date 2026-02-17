@@ -113,13 +113,11 @@
 <h2 class="centered">JOB ORDER</h2>
 
 <div class="row">
-    <div class="col-6">
-        <div class="row">
-            <label class="col-6">Date</label>
-            <span class="col-6 information">{{ obj.formatted_record_date }}</span>
-        </div>
+    <div class="col-6 row">
+        <label class="col-4">Date</label>
+         <span class="col-8 information">{{ obj.formatted_record_date }}</span>
     </div>
-    <div class="col-6" style="text-align: right;">
+    <div class="col-6 row" style="text-align: right;">
         <span>
             <label>Job Order No.</label>
             <span style="color:red;"><strong>{{ obj.job_order_number }}</strong></span>
@@ -129,13 +127,19 @@
 </div>
 
 <div class="row">
-            <label class="col-3">Customer</label>
-            <span class="col-8 information">{{ obj.customer.customer_name }}</span>
+    <div class="col-6 row">
+        <label class="col-4">Customer</label>
+        <span class="col-8 information">{{ obj.customer.customer_name }}</span>
+    </div>
+    <div class="col-6 row">
+        <label class="col-4">PO</label>
+        <span class="col-8 information">{{ obj.customer_reference_number }}</span>
+    </div>
 </div>
 
 <div class="row">
-            <label class="col-3">Customer Reference</label>
-            <span class="col-8 information">{{ obj.customer_reference_number }}</span>
+    <label class="col-2">Note</label>
+    <span class="col-9 information">{{ obj.order_note }}</span>
 </div>
 
 <table class="table">
