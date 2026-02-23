@@ -9,6 +9,7 @@ from . import app_name
 
 from .. customer.models import Customer
 from .. product.models import Product
+from .. measure.models import Measure
 
 
 DETAIL_ROWS = 10
@@ -48,10 +49,11 @@ class SubForm:
     quantity: float = 0
     measure_id: int = 0
     product_id: int = 0
-    so_number: str = ""
+    job_order_number: str = ""
     side_note: str = ""
 
     product_name: str = ""
+    measure_name: str = ""
 
     errors = {}
 
@@ -63,7 +65,10 @@ class SubForm:
                 product = Product.query.get(getattr(row, "product_id"))
                 setattr(self, attribute, product.id)
                 self.product_name = product.product_name
-            elif attribute in ["id", "measure_id"]:
+            elif attribute in ["measure_id"]:
+                measure = Measure.query.get(getattr(row, "measure_id"))
+                self.measure_name = measure.measure_name
+            elif attribute in ["id"]:
                 setattr(self, attribute, int(getattr(row, attribute)))
             elif attribute in ["quantity", "unit_price"]:
                 setattr(self, attribute, float(getattr(row, attribute)))
@@ -77,8 +82,12 @@ class SubForm:
             if self.quantity <= 0:
                 self.errors["quantity"] = "Quantity should be greater than zero (0)."
 
-            if not self.measure_id:
-                self.errors["measure_id"] = "Please select measure."
+            if not self.measure_name:
+                self.errors["measure_name"] = "Please type measure name."
+            else:
+                measure = Measure.query.filter(Measure.measure_name==self.measure_name).first()
+                if not measure:
+                    self.errors["measure_name"] = f"{self.measure_name} does not exists."
 
             if not self.product_name:
                 self.errors["product_name"] = "Please type product name."
@@ -86,14 +95,6 @@ class SubForm:
                 product = Product.query.filter(Product.product_name==self.product_name).first()
                 if not product:
                     self.errors["product_name"] = f"{self.product_name} does not exists."
-                
-            if self.so_number:
-                from .. sales_order import SalesOrder
-                sales_order = SalesOrder.query.filter_by(sales_order_number=self.so_number).first()
-                if sales_order:
-                    if not sales_order.is_submitted():
-                        self.errors["so_number"] = "SO Number not in record."
-
 
         if not self.errors:
             return True
@@ -104,9 +105,10 @@ class SubForm:
         return any([
             self.quantity, 
             self.measure_id, 
+            self.measure_name, 
             self.product_id, 
             self.product_name,
-            self.so_number, 
+            self.job_order_number, 
             self.side_note
             ])    
         
@@ -198,6 +200,7 @@ class Form:
                         _dict = get_attributes_as_dict(detail)
                         _dict.pop("id")
                         _dict.pop("product_name")
+                        _dict.pop("measure_name")
                         _dict[f"{app_name}_id"] = record.id
                         row_detail = ObjDetail(**_dict)
                         db.session.add(row_detail)

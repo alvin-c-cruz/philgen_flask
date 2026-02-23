@@ -15,6 +15,8 @@ from .extensions import create_summary
 from .. user import login_required, roles_accepted
 from . import app_name, app_label
 
+from .. job_order import JobOrderDetail
+
 
 bp = Blueprint(app_name, __name__, template_folder="pages", url_prefix=f"/{app_name}")
 ROLES_ACCEPTED = app_label
@@ -100,6 +102,29 @@ def add():
             obj=Obj, 
             control_number_field=f"{app_name}_number"
             )
+        
+        from_po = request.args.get('from_po')
+        if from_po:
+            from_po = eval(from_po)
+            customer = Customer.query.filter_by(customer_name=from_po["customer_name"]).first()
+            detail_ids = eval(str(from_po['detail_ids']))
+            
+            form.customer_id = customer.id
+            form.customer_name = customer.customer_name
+            
+            i = 0
+            for detail_id in detail_ids:
+                detail = JobOrderDetail.query.get(detail_id)
+                
+                _, form_detail = form.details[i]
+                form_detail.job_order_number = detail.job_order.job_order_number    
+                form_detail.quantity = detail.pending()     
+                form_detail.measure_name = detail.measure.measure_name    
+                form_detail.product_name = detail.product.product_name  
+                form_detail.side_note = detail.side_note 
+                
+                i += 1 
+                    
         
         last_entry = Obj.query.order_by(Obj.id.desc()).first()
 

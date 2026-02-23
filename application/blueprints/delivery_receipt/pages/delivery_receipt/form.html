@@ -166,7 +166,7 @@
                 <th>Quantity</th>
                 <th>Measure</th>
                 <th>Description</th>
-                <th>SO Number</th>
+                <th>Job Order #</th>
                 <th>Side Note</th>
             </tr>
         </thead>
@@ -183,19 +183,28 @@
                     {% endif %}
                 </td>
                 <td>
-                    <select name="measure_id-{{ i }}" class="form-select" {% if form._locked_ %}disabled{% endif %}>
-                        <option value="0"></option>
-                        {% for measure in measure_dropdown %}
-                            {% if measure['id'] == form_detail.measure_id %}
-                            <option value="{{ measure['id'] }}" selected>{{ measure['measure_name'] }}</option>
-                            {% else %}
-                            <option value="{{ measure['id'] }}">{{ measure['measure_name'] }}</option>
-                            {% endif %}
-                        {% endfor %}
-                    </select>
-                    {% if form_detail.errors.get('measure_id') %}
-                    <p class="text-danger">{{ form_detail.errors.get('measure_id') }}</p>
-                    {% endif %}
+                    <input type="text" id="measure_name-{{ i }}" name="measure_name-{{ i }}" value="{{ form_detail.measure_name }}" 
+                        class="form-control upper-case ui-autocomplete-input" 
+                        {% if form.submitted %} readonly {% else %} autocomplete="off" {% endif %} 
+                        spellcheck="false" data-ms-editor="true"
+                        {% if form.locked_ %}readonly{% endif %}>
+
+                        {% if form_detail.errors.get('measure_name') %}
+                        <p class="text-danger">{{ form_detail.errors.get('measure_name') }}</p>
+                        {% endif %}
+
+                        <script>
+                            $(function() {
+                                $.ajax({
+                                    url: '{{ url_for("measure._autocomplete") }}'
+                                    }).done(function (data){
+                                        $('#measure_name-{{ i }}').autocomplete({
+                                            source: data,
+                                            minLength: 2
+                                        });
+                                    });
+                                });
+                        </script>
                 </td>
                 <td>
                     <input type="text" id="product_name-{{ i }}" name="product_name-{{ i }}" value="{{ form_detail.product_name }}" 
@@ -221,9 +230,9 @@
                     </script>
                 </td>
                 <td>
-                    <input list="so_numbers" type="text" name="so_number-{{ i }}" value="{{ form_detail.so_number }}" class="form-control" {% if form._locked_ %}readonly{% endif %}>
-                    {% if form_detail.errors.get('so_number') %}
-                    <p class="text-danger">{{ form_detail.errors.get('so_number') }}</p>
+                    <input type="text" name="job_order_number-{{ i }}" value="{{ form_detail.job_order_number }}" class="form-control" readonly>
+                    {% if form_detail.errors.get('job_order_number') %}
+                    <p class="text-danger">{{ form_detail.errors.get('job_order_number') }}</p>
                     {% endif %}
                 </td>
                 <td>
@@ -236,51 +245,9 @@
             {% endfor %}
         </tbody>
     </table>
-    <datalist id="so_numbers">
-        <option></option>
-        {% for so_number in so_numbers %}
-        <option value="{{ so_number }}"></option>
-        {% endfor %}
-    </datalist>    
     </form>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="outstandingOrdersModal" tabindex="-1" aria-labelledby="outstandingOrdersModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="outstandingOrdersModalLabel">Outstanding Orders</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <!-- Table to be dynamically populated -->
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>PO No.</th>
-                <th>Date</th>
-                <th>Amount</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-                {% for order in outstanding_orders %}
-                <tr>
-                    <td>{{ order.sales_order_detail_id }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
 
 <script>
     $(function() {

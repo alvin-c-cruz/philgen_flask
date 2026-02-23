@@ -152,17 +152,19 @@ def pending():
                         "customer_name": customer_name,
                         "detail_ids": detail_ids
                     }
-                    return redirect(url_for('delivery_receipt.add' if cmd_button=="Create DR" else 'delivery_receipt_extra.add', from_po=from_po))
+                    
             else:
                 _error = "Please select an item to deliver."
-            return _error
+            return _error, from_po
+
 
         if request.form.get('cmd_button') == "Create DR":
-            customer_name_error = goto_DR("Create DR")
+            customer_name_error, from_po = goto_DR("Create DR")
+            return redirect(url_for('delivery_receipt.add', from_po=from_po))
             
         if request.form.get('cmd_button') == "Create ARD":
-            customer_name_error = goto_DR("Create ARD")
-   
+            customer_name_error, from_po = goto_DR("Create ARD")
+            return redirect(url_for('delivery_receipt_extra.add', from_po=from_po))
     
     context = {
         "rows": rows,
