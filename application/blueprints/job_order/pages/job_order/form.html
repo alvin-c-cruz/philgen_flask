@@ -108,7 +108,7 @@
                         {% endif %}
                     {% endif %}
                     {% if form.id %}
-                        {% if form.submitted or form.cancelled %}
+                        {% if (form.submitted or form.cancelled) and current_user.admin %}
                     <a href="{{ url_for('job_order.unlock', record_id=form.id) }}" 
                         class="btn btn-primary form-control" 
                         onclick="return confirmMessage('Type YES to unlock this record.');">Unlock</a>
