@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response
 from jinja2 import TemplateNotFound
 import json
+from sqlalchemy import or_
 
 from flask_login import current_user
 import datetime
@@ -50,12 +51,22 @@ def home():
 @login_required
 @roles_accepted([ROLES_ACCEPTED])
 def pending():
-    purchase_orders = PurchaseOrder.query.filter(
-        PurchaseOrder.cancelled.is_(None),
-        (PurchaseOrder.done == False) | (PurchaseOrder.done.is_(None))
-        ).order_by(
-        PurchaseOrder.purchase_order_number.desc()
-        ).all()
+    purchase_orders = (
+        PurchaseOrder.query
+        .filter(
+            or_(
+                PurchaseOrder.cancelled.is_(None),
+                PurchaseOrder.cancelled == ""
+            ),
+            or_(
+                PurchaseOrder.done == False,
+                PurchaseOrder.done.is_(None),
+                PurchaseOrder.done == ""
+            )
+        )
+        .order_by(PurchaseOrder.purchase_order_number.desc())
+        .all()
+    )
        
     vendor_options = sorted(
         {po.vendor.vendor_name for po in purchase_orders}
@@ -71,10 +82,16 @@ def pending():
         purchase_orders = (
             PurchaseOrder.query
             .filter(
-                PurchaseOrder.cancelled.is_(None),
+                or_(
+                    PurchaseOrder.cancelled.is_(None),
+                    PurchaseOrder.cancelled == ""
+                ),
                 PurchaseOrder.vendor.has(vendor_name=vendor_name),
-                (PurchaseOrder.done == False) | (PurchaseOrder.done.is_(None))
+                or_(
+                    PurchaseOrder.done == False,
+                    PurchaseOrder.done.is_(None)
                 )
+            )
             .order_by(PurchaseOrder.purchase_order_number.desc())
             .all()
         )    
