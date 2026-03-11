@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, Response
 from jinja2 import TemplateNotFound
 import json
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 
 from flask_login import current_user
 import datetime
@@ -54,6 +54,10 @@ def pending():
     purchase_orders = (
         PurchaseOrder.query
         .filter(
+            and_(
+                PurchaseOrder.submitted.isnot(None),
+                PurchaseOrder.submitted != ""
+            ),
             or_(
                 PurchaseOrder.cancelled.is_(None),
                 PurchaseOrder.cancelled == ""
@@ -82,6 +86,10 @@ def pending():
         purchase_orders = (
             PurchaseOrder.query
             .filter(
+                and_(
+                    PurchaseOrder.submitted.isnot(None),
+                    PurchaseOrder.submitted != ""
+                ),
                 or_(
                     PurchaseOrder.cancelled.is_(None),
                     PurchaseOrder.cancelled == ""
