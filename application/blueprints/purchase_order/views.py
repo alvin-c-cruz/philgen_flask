@@ -111,8 +111,10 @@ def pending():
             
             if detail_ids:
                 count = len(detail_ids)
-                if count > 10:
-                    vendor_name_error = "Selected items cannot be more than 10."
+                # Must not exceed DETAIL_ROWS in receiving_report/forms.py -
+                # receiving_report.add() fills form.details[i] for each selection.
+                if count > 20:
+                    vendor_name_error = "Selected items cannot be more than 20."
                 else:
                     from_po = {
                         "vendor_name": vendor_name,

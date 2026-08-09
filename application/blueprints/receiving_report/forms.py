@@ -7,7 +7,7 @@ from datetime import datetime
 
 from .. raw_material.models import RawMaterial
 
-DETAIL_ROWS = 10
+DETAIL_ROWS = 20
 
 
 @dataclass

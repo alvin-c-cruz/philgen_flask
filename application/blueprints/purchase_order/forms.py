@@ -9,7 +9,7 @@ from .. measure.models import Measure
 from .. vendor.models import Vendor
 
 
-DETAIL_ROWS = 10
+DETAIL_ROWS = 20
 
 
 @dataclass
