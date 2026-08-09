@@ -5,7 +5,7 @@
 {% block styles %}
 <style>
     .table th, .table td, .table input, .table select {
-        font-size: .85em; 
+        font-size: .85em;
     }
 
     /* Add your style adjustments here */
@@ -45,11 +45,11 @@
 
 
     .right_align {
-        text-align: right; 
+        text-align: right;
     }
 
     input[type=number] {
-        text-align: right; 
+        text-align: right;
     }
 
 /* Hide the spinner controls */
@@ -67,7 +67,7 @@
     {% if form.id %}
         {% if form.submitted or form.cancelled %}
         <h1 class="mb-4"><span style="color:red;">Locked</span> Receiving Report</h1>
-        {% else %}   
+        {% else %}
         <h1 class="mb-4">Edit Receiving Report</h1>
         {% endif %}
         <form action="{{ url_for('receiving_report.edit', record_id=form.id) }}" method="post">
@@ -81,10 +81,10 @@
         <div class="col-6">
             {% if form.errors.get('entry') %}
             <p class="text-danger">{{ form.errors.get('entry') }}</p>
-            {% endif %}    
+            {% endif %}
             {% if form.cancelled %}
             <h1 style="color:red;">CANCELLED</h1>
-            {% endif %}    
+            {% endif %}
         </div>
         <div class="col-6">
             <div class="row">
@@ -96,8 +96,8 @@
                     {% endif %}
                     {% if form.id %}
                         {% if form.submitted or form.cancelled %}
-                    <a href="{{ url_for('receiving_report.unlock', record_id=form.id) }}" 
-                        class="btn btn-primary form-control" 
+                    <a href="{{ url_for('receiving_report.unlock', record_id=form.id) }}"
+                        class="btn btn-primary form-control"
                         onclick="return confirmMessage('Type YES to unlock this record.');">Unlock</a>
                         {% endif %}
                     {% endif %}
@@ -105,20 +105,20 @@
                 <div class="col-4">
                     {% if form.id %}
                         {% if form.submitted or form.cancelled %}
-                    <a href="{{ url_for('receiving_report.print', record_id=form.id) }}" 
-                        class="btn btn-secondary form-control" 
+                    <a href="{{ url_for('receiving_report.print', record_id=form.id) }}"
+                        class="btn btn-secondary form-control"
                         target="_blank">Print</a>
                         {% else %}
-                    <input type="submit" value="Submit for Printing" name="cmd_button" 
-                        class="btn btn-primary form-control" 
+                    <input type="submit" value="Submit for Printing" name="cmd_button"
+                        class="btn btn-primary form-control"
                         onclick="return confirmMessage('Type YES to submit this record for Printing.');">
                         {% endif %}
                     {% endif %}
                 </div>
                 <div class="col-4">
                     {% if not form.cancelled and form.id %}
-                    <a href="{{ url_for('receiving_report.cancel', record_id=form.id) }}" 
-                        class="btn btn-danger form-control" 
+                    <a href="{{ url_for('receiving_report.cancel', record_id=form.id) }}"
+                        class="btn btn-danger form-control"
                         onclick="return confirmMessage('Type YES to cancel this record.');">Cancel</a>
                     {% endif %}
                 </div>
@@ -127,7 +127,7 @@
     </div>
 
     <hr>
-    
+
     <div class="row mb-2">
         <div class="col-6">
             <label for="record_date" class="form-label">Date</label>
@@ -141,7 +141,7 @@
             <input type="text" name="receiving_report_number" value="{{ form.receiving_report_number }}" class="form-control" {% if form.locked_ %}disabled{% endif %}>
             {% if form.errors.get('receiving_report_number') %}
             <p class="text-danger">{{ form.errors.get('receiving_report_number') }}</p>
-            {% endif %}    
+            {% endif %}
         </div>
     </div>
 
@@ -160,7 +160,7 @@
             </select>
             {% if form.errors.get('vendor_id') %}
             <p class="text-danger">{{ form.errors.get('vendor_id') }}</p>
-            {% endif %}    
+            {% endif %}
         </div>
 
         <div class="col-6">
@@ -178,7 +178,7 @@
             <input type="text" name="prepared_by" value="{{ form.prepared_by }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
             {% if form.errors.get('prepared_by') %}
             <p class="text-danger">{{ form.errors.get('prepared_by') }}</p>
-            {% endif %}    
+            {% endif %}
         </div>
 
         <div class="col-4">
@@ -186,7 +186,7 @@
             <input type="text" name="received_by" value="{{ form.received_by }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
             {% if form.errors.get('received_by') %}
             <p class="text-danger">{{ form.errors.get('received_by') }}</p>
-            {% endif %}    
+            {% endif %}
         </div>
 
         <div class="col-4">
@@ -194,7 +194,7 @@
             <input type="text" name="checked_by" value="{{ form.checked_by }}" class="form-control" autocomplete="off" {% if form.locked_ %}readonly{% endif %}>
             {% if form.errors.get('checked_by') %}
             <p class="text-danger">{{ form.errors.get('checked_by') }}</p>
-            {% endif %}    
+            {% endif %}
         </div>
 
     </div>
@@ -211,14 +211,14 @@
                     <th>Remarks</th>
                 </tr>
             </thead>
-            <tbody>                
+            <tbody>
                 {% for i, form_detail in form.details %}
                 <tr>
                     <td>
                         {% if form_detail.id %}
                         <input type="text" name="receiving_report_id-{{ i }}" value="{{ form_detail.receiving_report_id }}" hidden>
                         {% endif %}
-                        <input type="number" name="purchase_order_number-{{ i }}" step="any" value="{{ form_detail.purchase_order_number }}" class="form-control currency" readonly>
+                        <input type="number" name="purchase_order_number-{{ i }}" step="any" value="{{ form_detail.purchase_order_number }}" class="form-control currency" {% if not current_user.admin %}readonly{% endif %}>
                         {% if form_detail.errors.get('purchase_order_number') %}
                         <p class="text-danger">{{ form_detail.errors.get('purchase_order_number') }}</p>
                         {% endif %}
@@ -245,9 +245,9 @@
                         {% endif %}
                     </td>
                     <td>
-                        <input type="text" id="raw_material_name-{{ i }}" name="raw_material_name-{{ i }}" value="{{ form_detail.raw_material_name }}" 
-                        class="form-control upper-case ui-autocomplete-input" 
-                        {% if form.submitted %} readonly {% else %} autocomplete="off" {% endif %} 
+                        <input type="text" id="raw_material_name-{{ i }}" name="raw_material_name-{{ i }}" value="{{ form_detail.raw_material_name }}"
+                        class="form-control upper-case ui-autocomplete-input"
+                        {% if form.submitted %} readonly {% else %} autocomplete="off" {% endif %}
                         spellcheck="false" data-ms-editor="true">
 
                         {% if form_detail.errors.get('raw_material_name') %}
@@ -318,7 +318,7 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const rowCount = {{ form.details|length }};
-        
+
         for (let i = 0; i < rowCount; i++) {
             const quantityInput = document.querySelector(`input[name="quantity-${i}"]`);
             const unitPriceInput = document.querySelector(`input[name="unit_price-${i}"]`);
